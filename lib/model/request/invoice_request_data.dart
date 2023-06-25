@@ -2,7 +2,7 @@ import '../bill_product_item_model.dart';
 import '../invoice_charge_model.dart';
 
 class InvoiceRequestData {
-  int ID;
+  int id;
   int profileID;
   int clientID;
   List<UserBillProductItem> items;
@@ -14,7 +14,7 @@ class InvoiceRequestData {
   List<InvoiceChargeModel> custom;
 
   InvoiceRequestData({
-    this.ID = 0,
+    this.id = 0,
     this.profileID = 0,
     this.clientID = 0,
     this.items = const [],
@@ -25,17 +25,4 @@ class InvoiceRequestData {
     this.termsAndConditions = "",
     this.custom = const [],
   });
-
-  Map<String, dynamic> toJson() => {
-          "ID": ID,
-          "profileID": profileID,
-          "clientID": clientID,
-          "items": items.toList(),
-          "dueDate": dueDate,
-          "invoiceDate": invoiceDate,
-          "invoiceID": invoiceID,
-          "description": description,
-          "termsAndConditions": termsAndConditions,
-          "custom": custom.toList(),
-      };
 }

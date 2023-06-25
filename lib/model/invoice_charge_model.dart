@@ -24,7 +24,7 @@ class InvoiceChargeModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = name;
     data['type'] = type;
     data['operation'] = operation;
@@ -42,20 +42,6 @@ class InvoiceChargeValueTypeModel {
     this.title = "",
     this.value = "",
   });
-
-  InvoiceChargeValueTypeModel fromJson(Map<String, dynamic> json) {
-    return InvoiceChargeValueTypeModel(
-      title: json['title'] ?? "",
-      value: json['value'] ?? "",
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['title'] = title;
-    data['value'] = value;
-    return data;
-  }
 }
 
 class InvoiceChargeOperationTypeModel {
@@ -66,19 +52,5 @@ class InvoiceChargeOperationTypeModel {
     this.title = "",
     this.value = "",
   });
-
-  InvoiceChargeOperationTypeModel fromJson(Map<String, dynamic> json) {
-    return InvoiceChargeOperationTypeModel(
-      title: json['title'] ?? "",
-      value: json['value'] ?? "",
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['title'] = title;
-    data['value'] = value;
-    return data;
-  }
 }
 

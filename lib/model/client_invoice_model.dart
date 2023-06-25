@@ -1,57 +1,3 @@
-class ClientInvoiceModel {
-  final ClientInvoiceData data;
-
-  const ClientInvoiceModel({
-    this.data = const ClientInvoiceData(),
-  });
-
-  static ClientInvoiceModel fromJson(Map<String, dynamic> json) {
-    return ClientInvoiceModel(
-      data: json['data'] == null
-          ? const ClientInvoiceData()
-          : ClientInvoiceData.fromJson(json['data']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['data'] = this.data.toJson();
-    return data;
-  }
-}
-
-class ClientInvoiceData {
-  final List<UserClientInvoice> userClients;
-  final bool hasNext;
-
-  const ClientInvoiceData({
-    this.userClients = const [],
-    this.hasNext = false,
-  });
-
-  static ClientInvoiceData fromJson(Map<String, dynamic> json) {
-    List<UserClientInvoice> userClients = [];
-    if (json['userClients'] == null) {
-      userClients = [];
-    } else {
-      json['userClients'].forEach((v) {
-        userClients.add(UserClientInvoice.fromJson(v));
-      });
-    }
-    return ClientInvoiceData(
-      hasNext: json['hasNext'] ?? false,
-      userClients: userClients,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['userClients'] = userClients.map((v) => v.toJson()).toList();
-
-    data['hasNext'] = hasNext;
-    return data;
-  }
-}
 
 class UserClientInvoice {
   final int id;
@@ -97,7 +43,7 @@ class UserClientInvoice {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
     data['phone'] = phone;

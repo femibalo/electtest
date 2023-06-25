@@ -1,57 +1,3 @@
-class BillingEntityModel {
-  final BillingEntityData billingEntityData;
-
-  const BillingEntityModel({
-    this.billingEntityData = const BillingEntityData(),
-  });
-
-  static BillingEntityModel fromJson(Map<String, dynamic> json) {
-    return BillingEntityModel(
-      billingEntityData: json['data'] == null
-          ? const BillingEntityData()
-          : BillingEntityData.fromJson(json['data']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['data'] = billingEntityData.toJson();
-    return data;
-  }
-}
-
-class BillingEntityData {
-  final List<BillingEntityProfiles> profiles;
-  final bool hasNext;
-
-  const BillingEntityData({
-    this.profiles = const [],
-    this.hasNext = false,
-  });
-
-  static BillingEntityData fromJson(Map<String, dynamic> json) {
-    List<BillingEntityProfiles> profiles = [];
-    if (json['profiles'] == null) {
-      profiles = [];
-    } else {
-      json['profiles'].forEach((v) {
-        profiles.add(BillingEntityProfiles.fromJson(v));
-      });
-    }
-    return BillingEntityData(
-      hasNext: json['hasNext'] ?? false,
-      profiles: profiles,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['profiles'] = profiles.map((v) => v.toJson()).toList();
-    data['hasNext'] = hasNext;
-    return data;
-  }
-}
-
 class BillingEntityProfiles {
   final int id;
   final String name;
@@ -78,7 +24,7 @@ class BillingEntityProfiles {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
     data['email'] = email;

@@ -1,68 +1,17 @@
-class BillProductItemModel {
-  BillProductItemData data;
+import 'package:equatable/equatable.dart';
 
-  BillProductItemModel({required this.data});
-
-  static BillProductItemModel fromJson(Map<String, dynamic> json) {
-    return BillProductItemModel(
-      data: json['data'] == null
-          ? BillProductItemData()
-          : BillProductItemData.fromJson(json['data']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['data'] = this.data.toJson();
-    return data;
-  }
-}
-
-class BillProductItemData {
-  List<UserBillProductItem> userItems;
-  bool hasNext;
-
-  BillProductItemData({
-    this.userItems = const [],
-    this.hasNext = false,
-  });
-
-  static BillProductItemData fromJson(Map<String, dynamic> json) {
-    List<UserBillProductItem> userItems = [];
-    if (json['userItems'] == null) {
-      userItems = [];
-    } else {
-      json['userItems'].forEach((v) {
-        userItems.add(UserBillProductItem.fromJson(v));
-      });
-    }
-    return BillProductItemData(
-      hasNext: json['hasNext'] ?? false,
-      userItems: userItems,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-
-    data['userItems'] = userItems.map((v) => v.toJson()).toList();
-    data['hasNext'] = hasNext;
-    return data;
-  }
-}
-
-class UserBillProductItem {
-  int id;
-  String name;
-  String description;
-  int price;
-  int qty;
-  int currencyID;
-  String currencyCode;
-  num taxPercent;
-  num gstPercent;
-  num discountPercent;
-  bool isDeleted;
+class UserBillProductItem extends Equatable{
+  final int id;
+  final String name;
+  final String description;
+  final int price;
+  final int qty;
+  final int currencyID;
+  final String currencyCode;
+  final num taxPercent;
+  final num gstPercent;
+  final num discountPercent;
+  final bool isDeleted;
 
   UserBillProductItem({
     this.id = 0,
@@ -109,4 +58,7 @@ class UserBillProductItem {
     data['isDeleted'] = isDeleted;
     return data;
   }
+
+  @override
+  List<Object?> get props => [id,name,description,price,qty,currencyID,currencyCode,taxPercent,gstPercent,discountPercent,isDeleted];
 }
