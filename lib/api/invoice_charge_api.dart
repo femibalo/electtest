@@ -1,15 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:mezink_app/screens/invoices/model/invoice_charge_model.dart';
+import '../model/invoice_charge_model.dart';
 
 class InvoiceChargeProvider extends ChangeNotifier {
   List<InvoiceChargeModel> selectedCharges = [];
 
   List<InvoiceChargeValueTypeModel> chargeValueType = [];
   List<InvoiceChargeOperationTypeModel> chargeOperationType = [];
-  InvoiceChargeValueTypeModel selectedValueType =
-      InvoiceChargeValueTypeModel().fromJson({});
-  InvoiceChargeOperationTypeModel selectedOperationType =
-      InvoiceChargeOperationTypeModel().fromJson({});
+  InvoiceChargeValueTypeModel selectedValueType = InvoiceChargeValueTypeModel();
+  InvoiceChargeOperationTypeModel selectedOperationType = InvoiceChargeOperationTypeModel();
 
   Future<void> saveData({required InvoiceChargeModel value}) async {
     selectedCharges.add(value);

@@ -1,15 +1,30 @@
+import 'package:hive/hive.dart';
 
+part 'client_invoice_model.g.dart';
+
+@HiveType(typeId:7)
 class UserClientInvoice {
+  @HiveField(0)
   final int id;
+  @HiveField(1)
   final String name;
+  @HiveField(2)
   final String phone;
+  @HiveField(3)
   final String email;
+  @HiveField(4)
   final String billingAddress;
+  @HiveField(5)
   final String city;
+  @HiveField(6)
   final String state;
+  @HiveField(7)
   final String pinCode;
+  @HiveField(8)
   final String billingPhoneNumber;
+  @HiveField(9)
   final String displayName;
+  @HiveField(10)
   final bool isDeleted;
 
   const UserClientInvoice({

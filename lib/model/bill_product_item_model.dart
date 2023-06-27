@@ -1,16 +1,31 @@
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 
+part 'bill_product_item_model.g.dart';
+
+@HiveType(typeId:5)
 class UserBillProductItem extends Equatable{
+  @HiveField(0)
   final int id;
+  @HiveField(1)
   final String name;
+  @HiveField(2)
   final String description;
+  @HiveField(3)
   final int price;
-  final int qty;
+  @HiveField(4)
+  int qty;
+  @HiveField(5)
   final int currencyID;
+  @HiveField(6)
   final String currencyCode;
+  @HiveField(7)
   final num taxPercent;
+  @HiveField(8)
   final num gstPercent;
+  @HiveField(9)
   final num discountPercent;
+  @HiveField(10)
   final bool isDeleted;
 
   UserBillProductItem({

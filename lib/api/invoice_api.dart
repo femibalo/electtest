@@ -1,23 +1,10 @@
-// ignore_for_file: prefer_const_constructors, avoid_function_literals_in_foreach_calls
-
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/screens/forgot-password/model/response_state.dart';
-import 'package:mezink_app/screens/invoices/model/bill_product_item_model.dart';
-import 'package:mezink_app/screens/invoices/model/billing_entity_model.dart';
-import 'package:mezink_app/screens/invoices/model/client_invoice_model.dart';
-import 'package:mezink_app/screens/invoices/model/invoice_charge_model.dart';
-import 'package:mezink_app/screens/invoices/model/invoice_list_model.dart';
-import 'package:mezink_app/screens/invoices/model/request/invoice_request_data.dart';
-import 'package:mezink_app/screens/login/model/error.dart';
-import 'package:mezink_app/utils/common/api.dart';
-import 'package:mezink_app/utils/common/api_keys.dart';
-import 'package:mezink_app/utils/common/api_path.dart';
-import 'package:mezink_app/utils/common/app_keys.dart';
-import 'package:mezink_app/utils/common/utils.dart';
+import '../model/bill_product_item_model.dart';
+import '../model/billing_entity_model.dart';
+import '../model/client_invoice_model.dart';
+import '../model/invoice_charge_model.dart';
+import '../model/invoice_list_model.dart';
 
 class InvoicesProvider extends ChangeNotifier {
   InvoicesProviderState state = InvoicesProviderState(
@@ -26,7 +13,7 @@ class InvoicesProvider extends ChangeNotifier {
     detailInvoiceForEdit: InvoiceDetailModel(),
   );
 
-  Future<ResponseState> saveData({
+  Future<bool> saveData({
     required int id,
     required int profileID,
     required String invoiceName,
@@ -34,44 +21,10 @@ class InvoicesProvider extends ChangeNotifier {
     required String termsAndConditions,
   }) async {
     try {
-      var response = await apiPostRequest(
-        path:
-            id == 0 ? APIPaths.publishInvoicePath : APIPaths.updateInvoicePath,
-        newOptions: InvoiceRequestData(
-          ID: id,
-          profileID: state.selectedBillingEntity.id,
-          clientID: state.selectedClient.id,
-          items: state.billProductItem.toList(),
-          dueDate: state.isDueDateActive ? getDate(state.dueDate) : "",
-          invoiceDate: getDate(state.invoiceDate),
-          invoiceID: invoiceName,
-          description: description,
-          termsAndConditions: termsAndConditions,
-          custom: state.selectedCharges
-              .where((element) => element.isSelected == true)
-              .toList(),
-        ).toJson(),
-      );
-      if (response.statusCode == 200) {
-        getData();
-        return ResponseState(success: true);
-      }
-      return ResponseState(
-        success: false,
-        error: Errors.fromJson(response.data).detail,
-      );
+      ///store invoice data
+      return true;
     } catch (e) {
-      if (isNetworkError(e)) {
-        return ResponseState(
-          success: false,
-          error: S.current.check_internet,
-        );
-      } else {
-        return ResponseState(
-          success: false,
-          error: S.current.something_went_wrong,
-        );
-      }
+      return false;
     }
   }
 
@@ -79,146 +32,9 @@ class InvoicesProvider extends ChangeNotifier {
     state.loading = true;
     state.currentPage = 1;
     try {
-      state.invoiceListModel = InvoiceListModel();
-      var response = await apiGetRequest(
-        path: APIPaths.invoiceListPath,
-        queryParamsAsMap: {
-          MConstants.page: state.currentPage,
-          MConstants.searchTerms: state.searchQuery,
-        },
-      );
-      if (response.statusCode == 200) {
-        state.invoiceListModel = InvoiceListModel.fromJson(response.data);
-        if (state.invoiceListModel.data.hasNext) {
-          state.currentPage++;
-        }
-        notifyListeners();
-      } else {
-        state.isError = true;
-      }
+     ///get invoice data
     } catch (e) {
-      if (e is IOException) {
-        state.isNetworkError = true;
-      } else {
-        state.isError = true;
-      }
-    }
-    state.loading = false;
-    notifyListeners();
-  }
 
-  Future<void> getMore() async {
-    if (state.invoiceListModel.data.hasNext) {
-      try {
-        var response = await apiGetRequest(
-          path: APIPaths.invoiceListPath,
-          queryParamsAsMap: {
-            MConstants.page: state.currentPage,
-            MConstants.searchTerms: state.searchQuery,
-          },
-        );
-        if (response.statusCode == 200) {
-          // get full response from api
-          InvoiceListModel resultGetMore =
-              InvoiceListModel.fromJson(response.data);
-
-          // checking if has next return true, current will increment
-          if (resultGetMore.data.hasNext) {
-            state.currentPage++;
-          }
-          // updating invoice list model with new value
-          state.invoiceListModel = InvoiceListModel(
-            data: InvoiceData(
-              // updating hasNext from resultGetMore
-              hasNext: resultGetMore.data.hasNext,
-
-              // keep old invoices list data
-              invoices: state.invoiceListModel.data.invoices,
-            ),
-          );
-
-          // adding new invoices from resultGetMore
-          resultGetMore.data.invoices.forEach((element) {
-            state.invoiceListModel.data.invoices.add(element);
-          });
-          notifyListeners();
-        } else {
-          state.isError = true;
-        }
-      } catch (e) {
-        if (e is IOException) {
-          state.isNetworkError = true;
-        } else {
-          state.isError = true;
-        }
-      }
-      state.loading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> getDefaultInvoice() async {
-    state.loading = true;
-    try {
-      var response = await apiGetRequest(
-        path: APIPaths.defaultInvoicePath,
-      );
-      if (response.statusCode == 200) {
-        state.invoiceDate = DateFormat("yyyy-MM-dd")
-            .parse(response.data[APIKeys.data][APIKeys.invoiceDate]);
-        state.invoiceName = response.data[APIKeys.data][APIKeys.invoiceID];
-        state.selectedBillingEntity = BillingEntityProfiles.fromJson(
-            response.data[APIKeys.data][APIKeys.profile]);
-        state.billProductItem.clear();
-        state.selectedCharges.clear();
-        state.selectedClient = UserClientInvoice();
-        state.isTermsConditionActive = false;
-      } else {
-        state.isError = true;
-      }
-    } catch (e) {
-      if (e is IOException) {
-        state.isNetworkError = true;
-      } else {
-        state.isError = true;
-      }
-    }
-    state.loading = false;
-    notifyListeners();
-  }
-
-  Future<void> getDetailInvoice({required int invoiceID}) async {
-    state.loading = true;
-    state.billProductItem.clear();
-    state.selectedCharges.clear();
-    try {
-      var response = await apiGetRequest(
-        path: APIPaths.detailInvoicePath,
-        queryParamsAsMap: {
-          APIKeys.invoiceID: invoiceID,
-        },
-      );
-      if (response.statusCode == 200) {
-        state.detailInvoiceForEdit =
-            InvoiceDetailModel().fromJson(response.data[APIKeys.data]);
-        state.selectedBillingEntity = state.detailInvoiceForEdit.profile;
-        state.selectedClient = state.detailInvoiceForEdit.client;
-        state.billProductItem.addAll(state.detailInvoiceForEdit.details);
-        state.selectedCharges.addAll(state.detailInvoiceForEdit.custom);
-        state.selectedCharges.forEach((element) {
-          element.isSelected = true;
-        });
-        calculate();
-        notifyListeners();
-      } else {
-        state.isError = true;
-      }
-    } catch (e) {
-      if (e is IOException) {
-        state.isNetworkError = true;
-      } else {
-        state.isError = true;
-      }
     }
     state.loading = false;
     notifyListeners();
@@ -260,20 +76,7 @@ class InvoicesProvider extends ChangeNotifier {
 
   Future<bool> markAsPaid(int id) async {
     try {
-      var response = await apiPostRequest(
-        path: APIPaths.settleInvoice,
-        newOptions: {
-          "message": {
-            "ids": [id],
-          },
-        },
-      );
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        state.isError = true;
-        return false;
-      }
+      ///mark invoice as paid
     } catch (e) {
       if (e is IOException) {
         state.isNetworkError = true;
@@ -286,51 +89,19 @@ class InvoicesProvider extends ChangeNotifier {
     return false;
   }
 
-  Future<bool> sendInvoiceReminder(String paymentIdentifier) async {
-    try {
-      var response = await apiGetRequest(
-        path: APIPaths.sendInvoiceReminder,
-        queryParamsAsMap: {
-          MConstants.paymentIdentifier: paymentIdentifier,
-        },
-      );
-      if (response.statusCode == 200) {
-        if (response.data[APIKeys.data][APIKeys.success] == true) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        state.isError = true;
-        return false;
-      }
-    } catch (e) {
-      if (e is IOException) {
-        state.isNetworkError = true;
-      } else {
-        state.isError = true;
-      }
-    }
-    state.loading = false;
-    notifyListeners();
-    return false;
-  }
 
-  setSelectedBillProductItemsFromItemScreen(
-      {required List<UserBillProductItem> newItems}) {
+  setSelectedBillProductItemsFromItemScreen({required List<UserBillProductItem> newItems}) {
     state.billProductItem = [...newItems];
     notifyListeners();
   }
 
-  setSelectedChargesFromItemScreen(
-      {required List<InvoiceChargeModel> newCharges}) {
+  setSelectedChargesFromItemScreen({required List<InvoiceChargeModel> newCharges}) {
     state.selectedCharges = [...newCharges];
     notifyListeners();
   }
 
   void removeItemListWhere(int id) {
-    state.invoiceListModel.data.invoices
-        .removeWhere((element) => element.id == id);
+    state.invoiceListModel.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 
@@ -361,21 +132,7 @@ class InvoicesProvider extends ChangeNotifier {
             .toList(),
       };
       try {
-        var response = await apiPostRequest(
-          path: APIPaths.invoiceItemsCalculatePath,
-          newOptions: {
-            "message": form,
-          },
-        );
-        if (response.statusCode == 200) {
-          state.subTotal = response.data[APIKeys.data][APIKeys.totalPrice];
-          state.tax = response.data[APIKeys.data][APIKeys.taxPrice];
-          state.discount = response.data[APIKeys.data][APIKeys.discountPrice];
-          state.finalPrice = response.data[APIKeys.data][APIKeys.finalPrice];
-          notifyListeners();
-        } else {
-          state.isError = true;
-        }
+        ///calculate price
       } catch (e) {
         if (e is IOException) {
           state.isNetworkError = true;
@@ -403,7 +160,7 @@ class InvoicesProviderState {
   bool isDueDateActive;
   bool isNotesActive;
   bool isTermsConditionActive;
-  InvoiceListModel invoiceListModel;
+  List<Invoices> invoiceListModel;
   BillingEntityProfiles selectedBillingEntity;
   UserClientInvoice selectedClient;
   List<InvoiceChargeModel> selectedCharges;
@@ -428,7 +185,7 @@ class InvoicesProviderState {
     this.isDueDateActive = false,
     this.isNotesActive = false,
     this.isTermsConditionActive = false,
-    this.invoiceListModel = const InvoiceListModel(),
+    this.invoiceListModel = const [],
     this.searchQuery = "",
     this.invoiceName = "",
     this.selectedBillingEntity = const BillingEntityProfiles(),
@@ -445,5 +202,5 @@ class InvoicesProviderState {
     this.currentPage = 1,
     this.isAfterSearch = false,
   })  : invoiceDate = invoiceDate ?? DateTime.now(),
-        dueDate = dueDate ?? DateTime.now().add(Duration(days: 30));
+        dueDate = dueDate ?? DateTime.now().add(const Duration(days: 30));
 }
