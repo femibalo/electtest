@@ -58,7 +58,7 @@ class ButtonInvoiceDetail extends StatelessWidget {
                 iconAsset,
                 width: 20,
                 height: 20,
-                color: context.primaryColor,
+                color: Colors.blue,
               ),
               const SizedBox(
                 width: 10,

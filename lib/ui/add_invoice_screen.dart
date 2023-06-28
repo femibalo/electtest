@@ -1,47 +1,32 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
-
 import 'package:flutter/material.dart';
-import 'package:auto_route/auto_route.dart';
-import 'package:intl/intl.dart';
-import 'package:mezink_app/components/error_screens.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/filled_button.dart';
-import 'package:mezink_app/material_components/buttons/outlined_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/material_components/text_field/form_text_field.dart';
-import 'package:mezink_app/screens/invoices/api/invoice_api.dart';
-import 'package:mezink_app/screens/invoices/model/bill_product_item_model.dart';
-import 'package:mezink_app/screens/invoices/model/billing_entity_model.dart';
-import 'package:mezink_app/screens/invoices/model/client_invoice_model.dart';
-import 'package:mezink_app/screens/invoices/model/invoice_charge_model.dart';
-import 'package:mezink_app/screens/invoices/ui/billing-entity/billing_entity_screen.dart';
-import 'package:mezink_app/screens/invoices/ui/client/client_screen.dart';
-import 'package:mezink_app/screens/invoices/ui/components/item_in_add_invoice.dart';
-import 'package:mezink_app/screens/invoices/ui/items/items_screen.dart';
-import 'package:mezink_app/styles/color.dart';
-import 'package:mezink_app/styles/progress_indicator.dart';
-import 'package:mezink_app/utils/common/snack_bar.dart';
-import 'package:mezink_app/utils/common/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-
-import '../../../material_components/buttons/text_button.dart';
+import '../api/invoice_api.dart';
+import '../model/bill_product_item_model.dart';
+import '../model/billing_entity_model.dart';
+import '../model/client_invoice_model.dart';
+import '../model/invoice_charge_model.dart';
+import 'billing-entity/billing_entity_screen.dart';
 import 'charges/invoice_charges_screen.dart';
+import 'client/client_screen.dart';
+import 'components/error_screens.dart';
+import 'components/snack_bar.dart';
 import 'items/components/price_detail.dart';
+import 'items/items_screen.dart';
 
 class AddInvoiceScreen extends StatefulWidget {
   final int invoiceId;
   final bool isEditMode;
+
   const AddInvoiceScreen({
     Key? key,
     this.invoiceId = 0,
     this.isEditMode = false,
   }) : super(key: key);
 
-  static const String id = "addInvoice";
-  static void launchScreen(BuildContext context) {
-    context.router.pushNamed(id);
+  static void launchScreen(BuildContext context,
+      {int? invoiceId, bool? isEditMode}) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const AddInvoiceScreen()));
   }
 
   @override
@@ -72,44 +57,11 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       provider.state.isError = false;
       provider.state.isNetworkError = false;
     });
-    if (widget.isEditMode) {
-      getDetailInvoice();
-    } else {
-      getDefaultInvoice();
-    }
-  }
-
-  getDefaultInvoice() {
-    provider.getDefaultInvoice().then((value) {
-      invoiceNameController.text = provider.state.invoiceName;
-      invoiceDateController.text = getDateddMMMyyyy(provider.state.invoiceDate);
-      dueDateController.text = getDateddMMMyyyy(provider.state.dueDate);
-      termsConditionController.text =
-          S.current.terms_and_condition_default_in_create_invoice;
-      invoiceDateController.text = getDateddMMMyyyy(provider.state.invoiceDate);
-    });
-  }
-
-  getDetailInvoice() {
-    provider.getDetailInvoice(invoiceID: widget.invoiceId).then((value) {
-      var result = provider.state.detailInvoiceForEdit;
-      invoiceNameController.text = result.invoiceID;
-      if (result.description.isNotEmpty) {
-        provider.state.isNotesActive = true;
-        notesController.text = result.description;
-      }
-      if (result.termsAndConditions.isNotEmpty) {
-        provider.state.isTermsConditionActive = true;
-        termsConditionController.text = result.termsAndConditions;
-      }
-      invoiceDateController.text = getDateddMMMyyyy(provider.state.invoiceDate);
-      dueDateController.text = getDateddMMMyyyy(provider.state.dueDate);
-    });
   }
 
   reset() {
-    provider.state.selectedBillingEntity = BillingEntityProfiles();
-    provider.state.selectedClient = UserClientInvoice();
+    provider.state.selectedBillingEntity = const BillingEntityProfiles();
+    provider.state.selectedClient = const UserClientInvoice();
     provider.state.billProductItem = [];
     provider.state.selectedCharges = [];
     provider.state.isDueDateActive = false;
@@ -130,7 +82,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
           BillingEntityProfiles.fromJson(entity.toJson()));
       showSnackBar(
         context: context,
-        text: S.current.entity_selected,
+        text: 'entity selected',
         snackBarType: SnackBarType.success,
       );
     });
@@ -143,7 +95,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
           .changeSelectedClient(UserClientInvoice.fromJson(client.toJson()));
       showSnackBar(
         context: context,
-        text: S.current.client_selected,
+        text: 'client selected',
         snackBarType: SnackBarType.success,
       );
     });
@@ -154,13 +106,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
         context: context,
         selectedItemsInAddInvoiceScreen:
             provider.state.billProductItem.toList(),
-        onSaveSelectedItems: (List<UserBillProductItem> items) {
-          if (items.isNotEmpty) {
-            provider.setSelectedBillProductItemsFromItemScreen(
-                newItems: items.toList());
-            provider.calculate();
-          }
-        });
+        onSaveSelectedItems: (List<UserBillProductItem> items) {});
   }
 
   changeCharges() {
@@ -183,19 +129,19 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
           !provider.state.dueDate.isAfter(provider.state.invoiceDate)) {
         showSnackBar(
           context: context,
-          text: S.current.due_date_must_after_invoice_date,
+          text: 'due date must after invoice date',
           snackBarType: SnackBarType.error,
         );
       } else if (provider.state.selectedClient.id == 0) {
         showSnackBar(
           context: context,
-          text: S.current.client_empty,
+          text: 'client empty',
           snackBarType: SnackBarType.error,
         );
       } else if (provider.state.billProductItem.isEmpty) {
         showSnackBar(
           context: context,
-          text: S.current.item_empty,
+          text: 'item empty',
           snackBarType: SnackBarType.error,
         );
       } else {
@@ -216,39 +162,11 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
           : "",
     )
         .then((value) {
-      if (value.success) {
-        reset();
-        context.router.pop();
-        if (widget.isEditMode) {
-          showSnackBar(
-            context: context,
-            text: S.current.edit_invoice_success,
-            snackBarType: SnackBarType.success,
-          );
-        } else {
-          showSnackBar(
-            context: context,
-            text: S.current.add_invoice_success,
-            snackBarType: SnackBarType.success,
-          );
-        }
-        provider.state.selectedBillingEntity = BillingEntityProfiles();
-        provider.state.selectedClient = UserClientInvoice();
-        provider.state.billProductItem.clear();
-        provider.state.selectedCharges.clear();
-        provider.state.isDueDateActive = false;
-        notesController.clear();
-        provider.state.subTotal = 0;
-        provider.state.tax = 0;
-        provider.state.discount = 0;
-        provider.state.finalPrice = 0;
-      } else {
-        showSnackBar(
-          context: context,
-          text: value.error,
-          snackBarType: SnackBarType.error,
-        );
-      }
+      showSnackBar(
+        context: context,
+        text: 'add invoice success',
+        snackBarType: SnackBarType.success,
+      );
     });
   }
 
@@ -271,11 +189,10 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<InvoicesProvider>(context);
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      appBar: MAppBar(
-          title: widget.isEditMode
-              ? S.current.edit_invoice
-              : S.current.new_invoice,
+      appBar: AppBar(
+          title: Text(widget.isEditMode
+              ? 'edit invoice'
+              : 'new invoice'),
           actions: [_buildSaveButton(provider.state)]),
       body: _getWidgetBasedOnState(provider.state),
     );
@@ -284,7 +201,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   Widget _getWidgetBasedOnState(InvoicesProviderState state) {
     if (state.loading) {
       return const Center(
-        child: AdaptiveProgressIndicator(),
+        child: CircularProgressIndicator(),
       );
     }
     if (state.isNetworkError) {
@@ -304,25 +221,24 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
 
   Widget _buildSaveButton(InvoicesProviderState state) {
     if (state.isNetworkError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.isError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.loading) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: TextButton(
         onPressed: () {
           validation();
         },
-        child: Text(S.current.save),
+        child: const Text('save'),
       ),
     );
   }
@@ -331,7 +247,6 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
     List<Widget> children = [];
     children.add(
       ListView(
-        physics: customScrollPhysics(),
         shrinkWrap: true,
         padding: EdgeInsets.only(
           right: 20.0,
@@ -346,60 +261,56 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // === billing entity
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                S.current.billing_entity,
-                                style: context.getTitleMediumTextStyle(
-                                    context.onSurfaceColor),
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.21,
-                              child: MOutlineButton(
-                                onPressed: () {
-                                  changeEntity();
-                                },
-                                child: Text(S.current.edit),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                          top: 10,
-                          left: 5,
-                        ),
-                        child: ListTile(
-                          onTap: () {
-                            changeEntity();
-                          },
-                          contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            backgroundImage: NetworkImage(
-                              provider.state.selectedBillingEntity.logoURL
-                                  .toString(),
-                            ),
-                          ),
-                          title: Text(
-                            provider.state.selectedBillingEntity.name
-                                .toString(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            S.current.billing_entity,
                             style: context.getTitleMediumTextStyle(
                                 context.onSurfaceColor),
                           ),
                         ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.21,
+                          child: MOutlineButton(
+                            onPressed: () {
+                              changeEntity();
+                            },
+                            child: Text(S.current.edit),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(
+                        top: 10,
+                        left: 5,
                       ),
-                    ],
-                  ),
+                      child: ListTile(
+                        onTap: () {
+                          changeEntity();
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: NetworkImage(
+                            provider.state.selectedBillingEntity.logoURL
+                                .toString(),
+                          ),
+                        ),
+                        title: Text(
+                          provider.state.selectedBillingEntity.name
+                              .toString(),
+                          style: context.getTitleMediumTextStyle(
+                              context.onSurfaceColor),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 // === billing entity
 

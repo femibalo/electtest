@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../utils/common/snack_bar.dart';
 import '../../api/invoice_charge_api.dart';
+import '../../model/invoice_charge_model.dart';
 
 class InvoiceChargesScreen extends StatefulWidget {
   final List<InvoiceChargeModel> selectedChargesFromAddInvoiceScreen;
@@ -30,9 +31,7 @@ class InvoiceChargesScreen extends StatefulWidget {
   static void launchScreen({required BuildContext context, 
   required List<InvoiceChargeModel> selectedChargesFromAddInvoiceScreen, 
   required Function(List<InvoiceChargeModel>) onSaveSelectedCharges}) {
-     context.router.push<List<InvoiceChargeModel>>(
-        InvoiceChargesScreenRoute(selectedChargesFromAddInvoiceScreen: selectedChargesFromAddInvoiceScreen, 
-        onSaveSelectedCharges: onSaveSelectedCharges,));
+
   }
 
   @override

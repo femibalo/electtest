@@ -24,6 +24,8 @@ import 'package:mezink_app/styles/progress_indicator.dart';
 
 import '../../../../components/error_screens.dart';
 import '../../../../generated/l10n.dart';
+import '../../api/item_api.dart';
+import '../../model/bill_product_item_model.dart';
 
 class InvoiceItemsScreen extends StatefulWidget {
   final List<UserBillProductItem> selectedItemsInAddInvoiceScreen;
@@ -38,11 +40,7 @@ class InvoiceItemsScreen extends StatefulWidget {
   static void launchScreen({required BuildContext context, 
   required List<UserBillProductItem> selectedItemsInAddInvoiceScreen, 
   required Function(List<UserBillProductItem>) onSaveSelectedItems}) {
-     context.router.push<List<UserBillProductItem>>(
-        InvoiceItemsScreenRoute(
-            selectedItemsInAddInvoiceScreen:
-                selectedItemsInAddInvoiceScreen,
-            onSaveSelectedItems: onSaveSelectedItems));
+
   }
 
   @override

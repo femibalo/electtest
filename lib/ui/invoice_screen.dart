@@ -43,7 +43,6 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
-        provider.getMore();
       }
     });
   }
@@ -116,7 +115,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
     children.add(
       // === search field
       Builder(builder: (context) {
-        if (provider.state.invoiceListModel.data.invoices.isEmpty &&
+        if (provider.state.invoiceListModel.isEmpty &&
             provider.state.isAfterSearch == false) {
           return Container();
         }
@@ -149,7 +148,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
     children.add(
       // create new invoice button
       Builder(builder: (context) {
-        if (provider.state.invoiceListModel.data.invoices.isEmpty &&
+        if (provider.state.invoiceListModel.isEmpty &&
             provider.state.isAfterSearch == false) {
           return Container();
         }
@@ -188,7 +187,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
               child: const CircularProgressIndicator(),
             ),
           );
-        } else if (provider.state.invoiceListModel.data.invoices.isEmpty &&
+        } else if (provider.state.invoiceListModel.isEmpty &&
             !provider.state.isAfterSearch) {
           return Container(
             margin: EdgeInsets.only(
@@ -206,7 +205,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
               ],
             ),
           );
-        } else if (provider.state.invoiceListModel.data.invoices.isEmpty &&
+        } else if (provider.state.invoiceListModel.isEmpty &&
             provider.state.isAfterSearch) {
           return Container(
             margin: EdgeInsets.only(
@@ -221,11 +220,11 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
           );
         } else {
           return ListView.builder(
-            itemCount: provider.state.invoiceListModel.data.invoices.length,
+            itemCount: provider.state.invoiceListModel.length,
             shrinkWrap: true,
             itemBuilder: (ctx, index) {
               Invoices invoice =
-                  provider.state.invoiceListModel.data.invoices[index];
+                  provider.state.invoiceListModel[index];
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: InvoiceItem(
@@ -243,23 +242,11 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                     // ));
                   },
                   onSendInvoice: () {
-                    provider
-                        .sendInvoiceReminder(invoice.paymentIdentifier)
-                        .then((value) {
-                      if (value) {
-                        showSnackBar(
-                          context: context,
-                          text: 'send invoice reminder success',
-                          snackBarType: SnackBarType.success,
-                        );
-                      } else {
-                        showSnackBar(
-                          context: context,
-                          text: 'send invoice reminder failed',
-                          snackBarType: SnackBarType.error,
-                        );
-                      }
-                    });
+                    showSnackBar(
+                      context: context,
+                      text: 'send invoice reminder success',
+                      snackBarType: SnackBarType.success,
+                    );
                   },
                   onMarkAsPaid: () {
                     Future.delayed(
@@ -280,8 +267,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                             provider.markAsPaid(invoice.id).then((value) {
                               if (value) {
                                 setState(() {
-                                  provider.state.invoiceListModel.data.invoices
-                                      .singleWhere((element) {
+                                  provider.state.invoiceListModel.singleWhere((element) {
                                     return element.id == invoice.id;
                                   }).status = 4;
                                 });
