@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../api/invoice_api.dart';
 import '../model/bill_product_item_model.dart';
 import '../model/billing_entity_model.dart';
@@ -9,6 +11,8 @@ import 'billing-entity/billing_entity_screen.dart';
 import 'charges/invoice_charges_screen.dart';
 import 'client/client_screen.dart';
 import 'components/error_screens.dart';
+import 'components/form_text_field.dart';
+import 'components/item_in_add_invoice.dart';
 import 'components/snack_bar.dart';
 import 'items/components/price_detail.dart';
 import 'items/items_screen.dart';
@@ -267,26 +271,24 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
+                        const Expanded(
                           child: Text(
-                            S.current.billing_entity,
-                            style: context.getTitleMediumTextStyle(
-                                context.onSurfaceColor),
+                            'billing entity'
                           ),
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.21,
-                          child: MOutlineButton(
+                          child: ElevatedButton(
                             onPressed: () {
                               changeEntity();
                             },
-                            child: Text(S.current.edit),
+                            child: const Text('edit'),
                           ),
                         ),
                       ],
                     ),
                     Container(
-                      margin: EdgeInsets.only(
+                      margin: const EdgeInsets.only(
                         top: 10,
                         left: 5,
                       ),
@@ -303,10 +305,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                           ),
                         ),
                         title: Text(
-                          provider.state.selectedBillingEntity.name
-                              .toString(),
-                          style: context.getTitleMediumTextStyle(
-                              context.onSurfaceColor),
+                          provider.state.selectedBillingEntity.name.toString(),
                         ),
                       ),
                     ),
@@ -315,200 +314,183 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                 // === billing entity
 
                 Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: Divider(),
+                  margin: const EdgeInsets.only(top: 10),
+                  child: const Divider(),
                 ),
 
                 // === invoice name
                 Container(
-                  margin: EdgeInsets.only(
+                  margin: const EdgeInsets.only(
                     left: 5,
                     top: 20,
                   ),
-                  child: Text(
-                    S.current.invoice_details,
-                    style:
-                        context.getTitleMediumTextStyle(context.onSurfaceColor),
+                  child: const Text(
+                    'invoice details',
                   ),
                 ),
                 Container(
                   margin: const EdgeInsets.only(
                     top: 25.0,
                   ),
-                  child: MTextFormField(
+                  child: TextFormField(
                     controller: invoiceNameController,
                     textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.words,
                     maxLines: 1,
                     validator: (string) {
                       if (string.toString().isEmpty) {
-                        return S.current.invoice_name_empty;
+                        return 'invoice name empty';
                       }
                       return null;
                     },
-                    labelText: "${S.current.invoice_name} #",
                   ),
                 ),
                 // === invoice name
 
                 // date
                 Container(
-                  margin: EdgeInsets.only(top: 15),
+                  margin: const EdgeInsets.only(top: 15),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
-                        margin: EdgeInsets.only(left: 5),
+                        margin: const EdgeInsets.only(left: 5),
                         child: Row(
                           children: [
-                            Expanded(
-                              child: Container(
-                                child: Text(
-                                  S.current.date,
-                                  style: context.getTitleMediumTextStyle(
-                                      context.onSurfaceColor),
-                                ),
+                            const Expanded(
+                              child: Text(
+                                'date',
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Expanded(
                               child: SwitchListTile(
                                 contentPadding: EdgeInsets.zero,
                                 dense: true,
-                                activeColor: context.primaryColor,
                                 onChanged: (val) {
                                   provider.changeDueDateStatus(val);
                                 },
                                 value: provider.state.isDueDateActive,
-                                title: Text(
-                                  S.current.due_date,
-                                  style: context.getTitleMediumTextStyle(
-                                      context.onSurfaceColor),
+                                title: const Text(
+                                  'due date',
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: MTextFormField(
-                                      controller: invoiceDateController,
-                                      maxLines: 1,
-                                      onTap: () {
-                                        showDatePicker(
-                                          isInvoiceDate: true,
-                                        );
-                                      },
-                                      labelText: S.current.invoice_date,
-                                      readOnly: true,
-                                      suffixIcon: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.calendar_today_outlined,
-                                            size: 22,
-                                            color: MColors.grey,
-                                          )
-                                        ],
-                                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: MTextFormField(
+                                    controller: invoiceDateController,
+                                    maxLines: 1,
+                                    onTap: () {
+                                      showDatePicker(
+                                        isInvoiceDate: true,
+                                      );
+                                    },
+                                    labelText: 'invoice_date',
+                                    readOnly: true,
+                                    suffixIcon: const Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.calendar_today_outlined,
+                                          size: 22,
+                                          color: Colors.grey,
+                                        )
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Expanded(
-                                    child: MTextFormField(
-                                      controller: dueDateController,
-                                      readOnly: true,
-                                      maxLines: 1,
-                                      enabled: provider.state.isDueDateActive,
-                                      onTap: provider.state.isDueDateActive
-                                          ? () {
-                                              showDatePicker(
-                                                isInvoiceDate: false,
-                                              );
-                                            }
-                                          : null,
-                                      labelText: S.current.due_date,
-                                      suffixIcon: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.calendar_today_outlined,
-                                            size: 22,
-                                            color: MColors.grey,
-                                          )
-                                        ],
-                                      ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: MTextFormField(
+                                    controller: dueDateController,
+                                    readOnly: true,
+                                    maxLines: 1,
+                                    enabled: provider.state.isDueDateActive,
+                                    onTap: provider.state.isDueDateActive
+                                        ? () {
+                                            showDatePicker(
+                                              isInvoiceDate: false,
+                                            );
+                                          }
+                                        : null,
+                                    labelText: 'due date',
+                                    suffixIcon: const Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.calendar_today_outlined,
+                                          size: 22,
+                                          color: Colors.grey,
+                                        )
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
                 // === date
-
                 Container(
-                  margin: EdgeInsets.only(top: 20),
-                  child: Divider(),
+                  margin: const EdgeInsets.only(top: 20),
+                  child: const Divider(),
                 ),
 
                 // === client name
                 Container(
-                  margin: EdgeInsets.only(top: 20),
+                  margin: const EdgeInsets.only(top: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Container(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                S.current.client_details,
-                                style: context.getTitleMediumTextStyle(
-                                    context.onSurfaceColor),
-                              ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'client details',
                             ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.21,
-                              child: Builder(builder: (ctx) {
-                                if (provider.state.selectedClient.id != 0) {
-                                  return MOutlineButton(
-                                      onPressed: () {
-                                        changeClient();
-                                      },
-                                      child: Text(S.current.edit));
-                                }
-                                return MFilledButton(
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.21,
+                            child: Builder(builder: (ctx) {
+                              if (provider.state.selectedClient.id != 0) {
+                                return ElevatedButton(
                                     onPressed: () {
                                       changeClient();
                                     },
-                                    child: Text(S.current.add));
-                              }),
-                            ),
-                          ],
-                        ),
+                                    child: const Text('edit'));
+                              }
+                              return ElevatedButton(
+                                  onPressed: () {
+                                    changeClient();
+                                  },
+                                  child: const Text('add'));
+                            }),
+                          ),
+                        ],
                       ),
                       Container(
-                        margin: EdgeInsets.only(
+                        margin: const EdgeInsets.only(
                           top: 10,
                           left: 5,
                         ),
@@ -532,12 +514,10 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                     ? provider.state.selectedClient.name
                                     : provider.state.selectedClient.displayName
                                         .toString(),
-                                style: context.getTitleMediumTextStyle(
-                                    context.onSurfaceColor),
                               ),
                             );
                           }
-                          return Opacity(opacity: 0);
+                          return const Opacity(opacity: 0);
                         }),
                       ),
                     ],
@@ -546,38 +526,36 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                 // === client name
 
                 Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: Divider(),
+                  margin: const EdgeInsets.only(top: 10),
+                  child: const Divider(),
                 ),
 
                 // add bill product or item button
                 Container(
-                  margin: EdgeInsets.only(top: 20),
+                  margin: const EdgeInsets.only(top: 20),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Text(
-                          S.current.item_details,
-                          style: context
-                              .getTitleMediumTextStyle(context.onSurfaceColor),
+                          'item details',
                         ),
                       ),
                       SizedBox(
                           width: MediaQuery.of(context).size.width * 0.21,
                           child: Builder(builder: (ctx) {
                             if (provider.state.billProductItem.isEmpty) {
-                              return MFilledButton(
+                              return ElevatedButton(
                                   onPressed: () {
                                     changeItems();
                                   },
-                                  child: Text(S.current.add));
+                                  child: const Text('add'));
                             }
-                            return MOutlineButton(
+                            return ElevatedButton(
                                 onPressed: () {
                                   changeItems();
                                 },
-                                child: Text(S.current.edit));
+                                child: const Text('edit'));
                           })),
                     ],
                   ),
@@ -588,8 +566,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                 ListView.builder(
                   itemCount: provider.state.billProductItem.length,
                   shrinkWrap: true,
-                  physics: customScrollPhysics(),
-                  padding: EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.only(top: 10),
                   itemBuilder: (ctx, index) {
                     return ItemInAddInvoiceScreen(
                       model: provider.state.billProductItem[index],
@@ -599,12 +576,12 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                 // bill product or item list
 
                 Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: Divider(),
+                  margin: const EdgeInsets.only(top: 10),
+                  child: const Divider(),
                 ),
 
                 Container(
-                  margin: EdgeInsets.only(top: 10),
+                  margin: const EdgeInsets.only(top: 10),
                   child: Theme(
                     data: Theme.of(context)
                         .copyWith(dividerColor: Colors.transparent),
@@ -616,10 +593,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                   .termsAndConditions.isNotEmpty
                           ? true
                           : false,
-                      title: Text(
-                        S.current.additional_details,
-                        style: context
-                            .getTitleMediumTextStyle(context.onSurfaceColor),
+                      title: const Text(
+                        'additional details',
                       ),
                       children: [
                         // === note
@@ -627,12 +602,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                           contentPadding: EdgeInsets.zero,
                           value: provider.state.isNotesActive,
                           onChanged: provider.changeNotesActiveStatus,
-                          title: Text(
-                            S.current.notes,
-                            style: context.getTitleMediumTextStyle(
-                                context.onSurfaceColor),
+                          title: const Text(
+                            'notes',
                           ),
-                          activeColor: context.primaryColor,
                         ),
                         Builder(builder: (context) {
                           if (provider.state.isNotesActive) {
@@ -646,20 +618,18 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                     TextCapitalization.sentences,
                                 keyboardType: TextInputType.text,
                                 textInputAction: TextInputAction.done,
-                                labelText: S.current.notes,
-                                hintText: S.current.notes_placeholder,
+                                labelText: 'notes',
+                                hintText: 'notes placeholder',
                               ),
                             );
                           }
-                          return Opacity(opacity: 0);
+                          return const Opacity(opacity: 0);
                         }),
                         // === note
 
                         Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Divider(
-                            color: MColors.divider,
-                          ),
+                          margin: const EdgeInsets.only(top: 10),
+                          child: const Divider(),
                         ),
 
                         // === terms condition
@@ -667,12 +637,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                           contentPadding: EdgeInsets.zero,
                           value: provider.state.isTermsConditionActive,
                           onChanged: provider.changeTermsConditionStatus,
-                          title: Text(
-                            S.current.terms_and_condition,
-                            style: context.getTitleMediumTextStyle(
-                                context.onSurfaceColor),
+                          title: const Text(
+                            'terms and condition',
                           ),
-                          activeColor: context.primaryColor,
                         ),
                         Builder(builder: (context) {
                           if (provider.state.isTermsConditionActive) {
@@ -687,11 +654,11 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                 keyboardType: TextInputType.text,
                                 textInputAction: TextInputAction.done,
                                 maxLines: 3,
-                                labelText: S.current.terms_and_condition,
+                                labelText: 'terms and condition',
                               ),
                             );
                           }
-                          return Opacity(opacity: 0);
+                          return const Opacity(opacity: 0);
                         })
                         // === terms condition
                       ],
@@ -703,23 +670,23 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
           ),
 
           Container(
-            margin: EdgeInsets.only(top: 20),
-            child: Divider(),
+            margin: const EdgeInsets.only(top: 20),
+            child: const Divider(),
           ),
 
           // === sub total
           Container(
-            margin: EdgeInsets.only(top: 20),
+            margin: const EdgeInsets.only(top: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Builder(builder: (context) {
                   int subTotalNativePrice = 0;
-                  provider.state.billProductItem.forEach((element) {
+                  for (var element in provider.state.billProductItem) {
                     subTotalNativePrice += element.price * element.qty;
-                  });
+                  }
                   return TotalItemsPriceDetail(
-                    title: S.current.total_item_price,
+                    title: 'total_item_price',
                     value: NumberFormat("#,###").format(subTotalNativePrice),
                   );
                 }),
@@ -730,9 +697,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
 
           // === tax
           Container(
-            margin: EdgeInsets.only(top: 15),
+            margin: const EdgeInsets.only(top: 15),
             child: TotalItemsPriceDetail(
-              title: S.current.total_tax,
+              title: 'total tax',
               value: NumberFormat("#,###").format(provider.state.tax),
             ),
           ),
@@ -740,9 +707,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
 
           // === discount
           Container(
-            margin: EdgeInsets.only(top: 15),
+            margin: const EdgeInsets.only(top: 15),
             child: TotalItemsPriceDetail(
-              title: S.current.total_item_discount,
+              title: 'total item discount',
               value: provider.state.discount == 0
                   ? "0"
                   : "-${NumberFormat("#,###").format(provider.state.discount)}",
@@ -755,68 +722,63 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
             if (provider.state.billProductItem.isNotEmpty) {
               return Column(
                 children: [
-                  Container(
-                    child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        itemCount: provider.state.selectedCharges
-                            .where((element) => element.isSelected == true)
-                            .toList()
-                            .length,
-                        shrinkWrap: true,
-                        physics: customScrollPhysics(),
-                        itemBuilder: (ctx, index) {
-                          List<InvoiceChargeModel> finalListSelectedCharges = [
-                            ...provider.state.selectedCharges
-                                .where((element) => element.isSelected == true)
-                                .toList()
-                          ];
-                          String title = finalListSelectedCharges[index].type ==
-                                  'percent'
-                              ? "${finalListSelectedCharges[index].name} (${finalListSelectedCharges[index].value}% ${S.current.from.toLowerCase()} ${S.current.total_price})"
-                              : finalListSelectedCharges[index].name;
-                          String valuePercentageToNominal =
-                              "${finalListSelectedCharges[index].operation == '-' ? '-' : ''}${NumberFormat('#,###').format((finalListSelectedCharges[index].value / 100) * (provider.state.subTotal + provider.state.tax))}";
-                          String valueNominal =
-                              "${finalListSelectedCharges[index].operation == '-' ? '-' : ''}${NumberFormat('#,###').format(finalListSelectedCharges[index].value)}";
-                          return Container(
-                            margin: EdgeInsets.only(top: 15),
-                            child: TotalItemsPriceDetail(
-                              title: title,
-                              value: finalListSelectedCharges[index].type ==
-                                      'percent'
-                                  ? valuePercentageToNominal
-                                  : valueNominal,
-                            ),
-                          );
-                        }),
-                  ),
+                  ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: provider.state.selectedCharges
+                          .where((element) => element.isSelected == true)
+                          .toList()
+                          .length,
+                      shrinkWrap: true,
+                      itemBuilder: (ctx, index) {
+                        List<InvoiceChargeModel> finalListSelectedCharges = [
+                          ...provider.state.selectedCharges
+                              .where((element) => element.isSelected == true)
+                              .toList()
+                        ];
+                        String title = finalListSelectedCharges[index].type ==
+                                'percent'
+                            ? "${finalListSelectedCharges[index].name} (${finalListSelectedCharges[index].value}% from total price)"
+                            : finalListSelectedCharges[index].name;
+                        String valuePercentageToNominal =
+                            "${finalListSelectedCharges[index].operation == '-' ? '-' : ''}${NumberFormat('#,###').format((finalListSelectedCharges[index].value / 100) * (provider.state.subTotal + provider.state.tax))}";
+                        String valueNominal =
+                            "${finalListSelectedCharges[index].operation == '-' ? '-' : ''}${NumberFormat('#,###').format(finalListSelectedCharges[index].value)}";
+                        return Container(
+                          margin: const EdgeInsets.only(top: 15),
+                          child: TotalItemsPriceDetail(
+                            title: title,
+                            value: finalListSelectedCharges[index].type ==
+                                    'percent'
+                                ? valuePercentageToNominal
+                                : valueNominal,
+                          ),
+                        );
+                      }),
                   Container(
                     alignment: Alignment.centerRight,
-                    margin: EdgeInsets.only(top: 15),
+                    margin: const EdgeInsets.only(top: 15),
                     child: GestureDetector(
                       onTap: () {
                         changeCharges();
                       },
-                      child: Text(
-                        "+ ${S.current.other_tax_and_discount}",
+                      child: const Text(
+                        "+ other tax and discount",
                         textAlign: TextAlign.right,
-                        style: context
-                            .getTitleMediumTextStyle(MColors.primaryBlue),
                       ),
                     ),
                   ),
                 ],
               );
             }
-            return Opacity(opacity: 0);
+            return const Opacity(opacity: 0);
           }),
           // === other tax
 
           // === total price
           Container(
-            margin: EdgeInsets.only(top: 35),
+            margin: const EdgeInsets.only(top: 35),
             child: TotalItemsPriceDetail(
-              title: S.current.total_price,
+              title: 'total price',
               value: NumberFormat("#,###").format(provider.state.finalPrice),
               isBold: true,
             ),
@@ -832,7 +794,6 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: children,
-        physics: customScrollPhysics(alwaysScroll: true),
       ),
     );
   }
@@ -842,7 +803,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       context: context,
       builder: (ctx) {
         return Container(
-          padding: EdgeInsets.only(
+          padding: const EdgeInsets.only(
             top: 15,
             bottom: 15,
           ),
@@ -851,7 +812,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   left: 15,
                   right: 15,
                 ),
@@ -862,29 +823,24 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                       newDate: arg.value,
                     );
                     if (isInvoiceDate) {
-                      invoiceDateController.text =
-                          getDateddMMMyyyy(provider.state.invoiceDate);
+
                     } else {
-                      dueDateController.text =
-                          getDateddMMMyyyy(provider.state.dueDate);
+
                     }
                     Navigator.of(context).pop();
                   },
                   onSubmit: (arg) {},
-                  todayHighlightColor: context.primaryColor,
-                  selectionColor: context.primaryColor,
-                  rangeSelectionColor: context.primaryColor.withOpacity(0.1),
-                  startRangeSelectionColor: context.primaryColor,
-                  endRangeSelectionColor: context.primaryColor,
-                  maxDate: DateTime.now().add(Duration(days: 30)),
+                  todayHighlightColor: Colors.blue,
+                  selectionColor: Colors.blue,
+                  rangeSelectionColor: Colors.blue.withOpacity(0.1),
+                  startRangeSelectionColor:Colors.blue,
+                  endRangeSelectionColor: Colors.blue,
+                  maxDate: DateTime.now().add(const Duration(days: 30)),
                   initialDisplayDate: DateTime.now(),
                   view: DateRangePickerView.month,
                   selectionMode: DateRangePickerSelectionMode.single,
                   allowViewNavigation: true,
-                  headerStyle: DateRangePickerHeaderStyle(
-                    textStyle:
-                        context.getTitleMediumTextStyle(context.primaryColor),
-                  ),
+                  headerStyle: const DateRangePickerHeaderStyle(),
                 ),
               ),
             ],

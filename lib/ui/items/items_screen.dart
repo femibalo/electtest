@@ -1,31 +1,16 @@
-// ignore_for_file: prefer_const_constructors, sort_child_properties_last, avoid_unnecessary_containers
-
 import 'dart:async';
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/filled_button.dart';
-import 'package:mezink_app/material_components/buttons/text_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/material_components/text_field/form_text_field.dart';
-import 'package:mezink_app/routes/app_routing.gr.dart';
-import 'package:mezink_app/screens/invoices/api/invoice_api.dart';
-import 'package:mezink_app/screens/invoices/api/item_api.dart';
-import 'package:mezink_app/screens/invoices/model/bill_product_item_model.dart';
-import 'package:collection/collection.dart';
-import 'package:mezink_app/screens/invoices/ui/items/add_invoice_item_screen.dart';
-import 'package:mezink_app/screens/invoices/ui/items/components/item_list.dart';
-import 'package:mezink_app/screens/invoices/ui/items/components/price_detail.dart';
-import 'package:mezink_app/utils/common/snack_bar.dart';
-import 'package:mezink_app/utils/common/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:mezink_app/styles/progress_indicator.dart';
-
-import '../../../../components/error_screens.dart';
-import '../../../../generated/l10n.dart';
+import '../../api/invoice_api.dart';
 import '../../api/item_api.dart';
 import '../../model/bill_product_item_model.dart';
+import '../components/dialog.dart';
+import '../components/error_screens.dart';
+import '../components/snack_bar.dart';
+import 'add_invoice_item_screen.dart';
+import 'components/item_list.dart';
+import 'components/price_detail.dart';
 
 class InvoiceItemsScreen extends StatefulWidget {
   final List<UserBillProductItem> selectedItemsInAddInvoiceScreen;
@@ -74,7 +59,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
-        provider.getMore();
+
       }
     });
   }
@@ -101,7 +86,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
   }
 
   addNewItem() async {
-    AddInvoiceItemScreen.launchScreen(context);
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddInvoiceItemScreen()));
   }
 
   // send selected items to add invoice screen
@@ -109,12 +94,12 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
     if (provider.states.selectedItems.isEmpty) {
       showSnackBar(
         context: context,
-        text: S.current.select_at_least_one_item,
+        text: 'select at least one item',
         snackBarType: SnackBarType.error,
       );
     } else {
       widget.onSaveSelectedItems(provider.states.selectedItems.toList());
-      context.router.pop();
+      Navigator.pop(context);
     }
   }
 
@@ -143,9 +128,8 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: context.backgroundColor,
-        appBar: MAppBar(
-          title: S.current.select_items,
+        appBar: AppBar(
+          title: const Text('select items'),
           actions: [_buildSaveButton(provider.states)],
         ),
         bottomNavigationBar: _buildPriceDetailCard(provider.states),
@@ -156,86 +140,82 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
 
   Widget _buildPriceDetailCard(InvoiceItemState state) {
     if (state.isNetworkError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.isError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.loading) {
       return Container(
         height: 82,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           border: Border(
-            top: BorderSide(
-                color: context.disabledColor,
-            ),
+            top: BorderSide(),
           ),
         ),
-        child: Center(child: AdaptiveProgressIndicator()),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding: EdgeInsets.only(top: 10, bottom: 10),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.only(top: 10, bottom: 10),
+          decoration: const BoxDecoration(
             border: Border(
-              top: BorderSide(
-                color: context.disabledColor,
-              ),
+              top: BorderSide(),
             ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   top: 5,
                   bottom: 10,
                   left: 20,
                   right: 20,
                 ),
                 child: TotalItemsPriceDetail(
-                  title: S.current.subtotal,
+                  title: 'subtotal',
                   value: NumberFormat("#,###").format(provider.states.subTotal),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   top: 5,
                   bottom: 10,
                   left: 20,
                   right: 20,
                 ),
                 child: TotalItemsPriceDetail(
-                  title: S.current.tax,
+                  title: 'tax',
                   value: NumberFormat("#,###").format(provider.states.tax),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   top: 5,
                   bottom: 10,
                   left: 20,
                   right: 20,
                 ),
                 child: TotalItemsPriceDetail(
-                  title: S.current.discount,
+                  title: 'discount',
                   value: NumberFormat("#,###").format(provider.states.discount),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   top: 5,
                   bottom: 15,
                   left: 20,
                   right: 20,
                 ),
                 child: TotalItemsPriceDetail(
-                  title: S.current.total,
+                  title: 'total',
                   value:
                       NumberFormat("#,###").format(provider.states.finalPrice),
                   isBold: true,
@@ -250,25 +230,24 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
 
   Widget _buildSaveButton(InvoiceItemState state){
     if (state.isNetworkError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.isError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.loading) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: TextButton(
         onPressed: () {
           saveSelectedItems();
         },
-        child: Text(S.current.save),
+        child: const Text('save'),
       ),
     );
   }
@@ -300,63 +279,48 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
     children.add(
       // === search field
       Builder(builder: (ctx) {
-        if (provider.states.billProductItemModel.data.userItems.isEmpty &&
+        if (provider.states.billProductItems.isEmpty &&
             provider.states.isAfterSearch == false) {
           return Container();
         }
-        return Container(
-          child: MTextFormField(
-            controller: searchController,
-            textInputAction: TextInputAction.done,
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 1,
-            onChanged: onSearchChanged,
-            labelText: S.current.search_items,
-            prefixIcon: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  child: Image.asset(
-                    "assets/images/search.png",
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        return TextFormField(
+          controller: searchController,
+          textInputAction: TextInputAction.done,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 1,
+          onChanged: onSearchChanged,
         );
       }),
       // === search field
     );
 
-    children.add(SizedBox(
+    children.add(const SizedBox(
       height: 20,
     ));
 
     children.add(
       // create new item button
       Builder(builder: (ctx) {
-        if (provider.states.billProductItemModel.data.userItems.isEmpty &&
+        if (provider.states.billProductItems.isEmpty &&
             provider.states.isAfterSearch == false) {
           return Container();
         }
         return UnconstrainedBox(
-          child: MFilledButton(
+          child: ElevatedButton(
             onPressed: () {
               addNewItem();
             },
-            child: Row(
+            child: const Row(
               children: [
                 Icon(
                   Icons.add,
-                  color: context.onPrimaryColor,
+                  color: Colors.blue,
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 4,
                 ),
                 Text(
-                  S.current.add_new_item,
+                  'add new item',
                 ),
               ],
             ),
@@ -366,19 +330,18 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
       // create new item button
     );
 
-    children.add(SizedBox(height: 20));
+    children.add(const SizedBox(height: 20));
     children.add(
       Builder(builder: (ctx) {
         if (state.loading) {
           return Container(
-            margin:
-                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.2),
-            child: Center(
-              child: AdaptiveProgressIndicator(),
+            margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.2),
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
           );
         } else if (provider
-                .states.billProductItemModel.data.userItems.isEmpty &&
+                .states.billProductItems.isEmpty &&
             !provider.states.isAfterSearch) {
           return Container(
             margin: EdgeInsets.only(
@@ -390,14 +353,14 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
                   onRefresh: () {
                     addNewItem();
                   },
-                  text: S.current.no_items_added,
-                  refreshButtonText: S.current.add_new_item,
+                  text: 'no items added',
+                  refreshButtonText: 'add new item',
                 ),
               ],
             ),
           );
         } else if (provider
-                .states.billProductItemModel.data.userItems.isEmpty &&
+                .states.billProductItems.isEmpty &&
             provider.states.isAfterSearch) {
           return Container(
             margin: EdgeInsets.only(
@@ -407,18 +370,17 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
               onRefresh: () {
                 refreshData();
               },
-              text: S.current.no_results_found,
+              text: 'no results found',
             ),
           );
         }
         return ListView.builder(
-          itemCount: provider.states.billProductItemModel.data.userItems.length,
+          itemCount: provider.states.billProductItems.length,
           shrinkWrap: true,
-          physics: customScrollPhysics(),
           padding: EdgeInsets.zero,
           itemBuilder: (ctx, index) {
             var userItems =
-                provider.states.billProductItemModel.data.userItems[index];
+                provider.states.billProductItems[index];
             return ItemListInvoiceItem(
               model: userItems,
               selectedItems: provider.states.selectedItems,
@@ -429,72 +391,62 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
                 provider.decreaseItemQty(userItems.id);
               },
               onEdit: () {
-                context.router.push(AddInvoiceItemScreenRoute(
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddInvoiceItemScreen(
                   itemID: userItems.id,
                   isEditMode: true,
-                ));
+                )));
               },
               onDelete: () {
                 // handle selected item to delete
                 UserBillProductItem? checkItemIsInSelectedItem = provider
                     .states.selectedItems
-                    .singleWhereOrNull((element) => element.id == userItems.id);
-                if (checkItemIsInSelectedItem == null) {
-                  int deletedItemId = userItems.id;
-                  Future.delayed(
-                    const Duration(seconds: 0),
-                    () {
-                      showCustomAlertDialog(
-                        title: "${S.current.delete} ${userItems.name}",
-                        subTitle: S.current.are_you_sure_want_to_delete_item,
-                        context: context,
-                        leftButtonText: S.current.yes,
-                        rightButtonText: S.current.cancel,
-                        onLeftButtonClicked: () {
-                          Navigator.of(context).pop();
-                          showSnackBar(
-                            context: context,
-                            text: S.current.please_wait,
-                          );
-                          provider
-                              .deleteItem(itemId: userItems.id)
-                              .then((value) {
-                            if (value) {
-                              showSnackBar(
-                                context: context,
-                                text: S.current.delete_item_success,
-                                snackBarType: SnackBarType.success,
-                              );
-                              Provider.of<InvoicesProvider>(
-                                context,
-                                listen: false,
-                              ).removeBillProductItemWhere(deletedItemId);
-                              Provider.of<InvoicesProvider>(
-                                context,
-                                listen: false,
-                              ).calculate();
-                            } else {
-                              showSnackBar(
-                                context: context,
-                                text: S.current.delete_item_error,
-                                snackBarType: SnackBarType.success,
-                              );
-                            }
-                          });
-                        },
-                        onRightButtonClicked: () {
-                          Navigator.of(context).pop();
-                        },
-                      );
-                    },
-                  );
-                } else {
-                  showSnackBar(
-                    context: context,
-                    text: S.current.delete_selected_item,
-                    snackBarType: SnackBarType.error,
-                  );
-                }
+                    .firstWhere((element) => element.id == userItems.id);
+                Future.delayed(
+                  const Duration(seconds: 0), () {
+                    showCustomAlertDialog(
+                      title: 'delete ${userItems.name}',
+                      subTitle: 'Are you sure want to delete item',
+                      context: context,
+                      leftButtonText: 'yes',
+                      rightButtonText: 'cancel',
+                      onLeftButtonClicked: () {
+                        Navigator.of(context).pop();
+                        showSnackBar(
+                          context: context,
+                          text: 'please wait',
+                        );
+                        provider
+                            .deleteItem(itemId: userItems.id)
+                            .then((value) {
+                          if (value) {
+                            showSnackBar(
+                              context: context,
+                              text: 'delete item success',
+                              snackBarType: SnackBarType.success,
+                            );
+                            Provider.of<InvoicesProvider>(
+                              context,
+                              listen: false,
+                            ).removeBillProductItemWhere(0);
+                            Provider.of<InvoicesProvider>(
+                              context,
+                              listen: false,
+                            ).calculate();
+                          } else {
+                            showSnackBar(
+                              context: context,
+                              text: 'Delete item error',
+                              snackBarType: SnackBarType.success,
+                            );
+                          }
+                        });
+                      },
+                      onRightButtonClicked: () {
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  },
+                );
               },
             );
           },
@@ -511,9 +463,8 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
           right: 20,
           bottom: MediaQuery.of(context).size.height * 0.1,
         ),
-        children: children,
         controller: scrollController,
-        physics: customScrollPhysics(alwaysScroll: true),
+        children: children,
       ),
     );
   }

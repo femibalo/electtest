@@ -1,22 +1,13 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, prefer_const_literals_to_create_immutables, sort_child_properties_last
-
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:mezink_app/components/error_screens.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/text_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/material_components/text_field/form_text_field.dart';
-import 'package:mezink_app/screens/analytics/model/currency_model.dart';
-import 'package:mezink_app/screens/invoices/api/item_api.dart';
-import 'package:mezink_app/styles/progress_indicator.dart';
-import 'package:mezink_app/utils/common/utils.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/common/snack_bar.dart';
+import '../../api/item_api.dart';
+import '../../model/currency_model.dart';
+import '../components/error_screens.dart';
+import '../components/form_text_field.dart';
+import '../components/snack_bar.dart';
 
 class AddInvoiceItemScreen extends StatefulWidget {
   final int itemID;
@@ -28,8 +19,8 @@ class AddInvoiceItemScreen extends StatefulWidget {
   }) : super(key: key);
 
   static const String id = "addInvoiceItem";
-  static void launchScreen(BuildContext context) {
-    context.router.pushNamed(id);
+  static void launchScreen({required BuildContext context,required int itemId, required bool isEditMode}) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddInvoiceItemScreen(itemID: itemId,isEditMode: isEditMode,)));
   }
 
   @override
@@ -64,17 +55,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
     });
     provider.getCurrencies().then((value) {
       if (widget.isEditMode) {
-        provider.getDetailItem(widget.itemID).then((value) {
-          if (value != false) {
-            // if return true == success load data from api
-            var selectedDetail = provider.states.selectedDetailItem;
-            nameController.text = selectedDetail.name.toString();
-            descriptionController.text = selectedDetail.description.toString();
-            priceController.text = selectedDetail.price.toString();
-            taxController.text = selectedDetail.taxPercent.toString();
-            discountController.text = selectedDetail.discountPercent.toString();
-          }
-        });
+
       }
     });
   }
@@ -86,14 +67,13 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
   }
 
   saveData() {
-    provider
-        .saveData(
+    provider.saveData(
             id: widget.itemID,
             name: nameController.text.toString(),
             description: descriptionController.text.toString(),
             price: int.parse(priceController.text.toString()),
             qty: widget.isEditMode
-                ? provider.states.billProductItemModel.data.userItems
+                ? provider.states.billProductItems
                     .singleWhere((element) => element.id == widget.itemID)
                     .qty
                 : 0,
@@ -104,27 +84,19 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
               discountController.text.toString(),
             ))
         .then((value) {
-      if (value.success) {
-        context.router.pop();
-        reset();
-        if (widget.isEditMode) {
-          showSnackBar(
-            context: context,
-            text: S.current.edit_item_success,
-            snackBarType: SnackBarType.success,
-          );
-        } else {
-          showSnackBar(
-            context: context,
-            text: S.current.add_item_success,
-            snackBarType: SnackBarType.success,
-          );
-        }
+      Navigator.pop(context);
+      reset();
+      if (widget.isEditMode) {
+        showSnackBar(
+          context: context,
+          text:'edit item success',
+          snackBarType: SnackBarType.success,
+        );
       } else {
         showSnackBar(
           context: context,
-          text: value.error,
-          snackBarType: SnackBarType.error,
+          text: 'add item success',
+          snackBarType: SnackBarType.success,
         );
       }
     });
@@ -157,10 +129,8 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<InvoiceItemProvider>(context);
     return Scaffold(
-        backgroundColor: context.backgroundColor,
-        appBar: MAppBar(
-          title:
-              widget.isEditMode ? S.current.edit_item : S.current.add_new_item,
+        appBar: AppBar(
+          title: Text(widget.isEditMode ? 'edit item' : 'add new item'),
           actions: [_buildSaveButton(provider.states)],
         ),
         body: _getWidgetBasedOnState(provider.states));
@@ -168,25 +138,24 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
 
   Widget _buildSaveButton(InvoiceItemState state) {
     if (state.isNetworkError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.isError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.loading) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: TextButton(
         onPressed: () {
           validation();
         },
-        child: Text(S.current.save),
+        child: const Text('save'),
       ),
     );
   }
@@ -194,7 +163,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
   Widget _getWidgetBasedOnState(InvoiceItemState state) {
     if (state.loading) {
       return const Center(
-        child: AdaptiveProgressIndicator(),
+        child: CircularProgressIndicator(),
       );
     }
     if (state.isNetworkError) {
@@ -216,7 +185,6 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
     List<Widget> children = [];
     children.add(
       ListView(
-        physics: customScrollPhysics(),
         padding: EdgeInsets.only(
           top: 10,
           left: 20,
@@ -231,7 +199,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
               children: [
                 // === item name
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                       controller: nameController,
                       textInputAction: TextInputAction.next,
@@ -240,42 +208,38 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return S.current.item_name_empty;
+                          return 'item name empty';
                         }
                         return null;
                       },
-                      labelText: S.current.item_name),
+                      labelText: 'item name'),
                 ),
-                // === item name
 
-                // === item description
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                       controller: descriptionController,
                       textInputAction: TextInputAction.next,
                       textCapitalization: TextCapitalization.sentences,
                       maxLines: 1,
-                      labelText: S.current.item_description),
+                      labelText: 'item description'),
                 ),
                 // === item description
 
                 // === item price
                 Container(
-                  margin: EdgeInsets.only(top: 35.0),
+                  margin: const EdgeInsets.only(top: 35.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
-                        margin: EdgeInsets.only(left: 5),
-                        child: Text(
-                          S.current.price,
-                          style: context
-                              .getTitleMediumTextStyle(context.onSurfaceColor),
+                        margin: const EdgeInsets.only(left: 5),
+                        child: const Text(
+                          'price',
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(top: 20),
+                        margin: const EdgeInsets.only(top: 20),
                         width: double.infinity,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,19 +255,19 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                                 validator: (string) {
                                   if (string == null ||
                                       string.toString().trim().isEmpty) {
-                                    return S.current.item_price_empty;
+                                    return 'item price empty';
                                   }
                                   return null;
                                 },
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Column(
                               children: [
                                 Container(
-                                  padding: EdgeInsets.only(
+                                  padding: const EdgeInsets.only(
                                     top: 5,
                                     bottom: 5,
                                     left: 10,
@@ -312,7 +276,6 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: context.outlineColor,
                                       width: 1,
                                       style: BorderStyle.solid,
                                     ),
@@ -320,23 +283,21 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                                   child: DropdownButton(
                                     enableFeedback: true,
                                     value: provider.states.selectedCurrency,
-                                    icon: Padding(
+                                    icon: const Padding(
                                       padding: EdgeInsets.only(left: 10),
                                       child: Icon(
                                         Icons.keyboard_arrow_down_rounded,
                                       ),
                                     ),
-                                    style: context.getTitleMediumTextStyle(
-                                        context.onSurfaceColor),
                                     items:
                                         provider.states.currencies.map((value) {
                                       return DropdownMenuItem(
+                                        value: value,
                                         child: Text(toBeginningOfSentenceCase(
                                             value.code.toUpperCase())!),
-                                        value: value,
                                       );
                                     }).toList(),
-                                    underline: Opacity(opacity: 0),
+                                    underline: const Opacity(opacity: 0),
                                     onChanged: (CurrencyModel? value) {
                                       provider.changeSelectedCurrency(value!);
                                     },
@@ -354,13 +315,13 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
 
                 // === item tax
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                       controller: taxController,
                       textInputAction: TextInputAction.next,
                       textCapitalization: TextCapitalization.words,
                       keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
+                          const TextInputType.numberWithOptions(decimal: true),
                       maxLines: 1,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
@@ -376,17 +337,17 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return S.current.item_tax_empty;
+                          return 'item tax empty';
                         }
                         return null;
                       },
-                      labelText: "${S.current.tax} (%)"),
+                      labelText: "tax (%)"),
                 ),
                 // === item tax
 
                 // === item discount
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                       controller: discountController,
                       textInputAction: TextInputAction.next,
@@ -407,11 +368,11 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return S.current.item_discount_empty;
+                          return 'item discount empty';
                         }
                         return null;
                       },
-                      labelText: "${S.current.discount} (%)"),
+                      labelText: "discount (%)"),
                 ),
                 // === item discount
               ],
@@ -427,7 +388,6 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: children,
-        physics: customScrollPhysics(alwaysScroll: true),
       ),
     );
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/src/services/text_formatter.dart';
+import 'package:mezink_app/material_components/extensions/context_extensions.dart';
 
-class ITextFormField extends StatelessWidget {
+class MTextFormField extends StatelessWidget {
   final bool obscureText;
   final bool enableSuggestions;
   final bool autocorrect;
@@ -26,7 +27,7 @@ class ITextFormField extends StatelessWidget {
   final int? maxLines;
   final int? minLines;
   final int? maxLength;
-  final MaxLengthEnforcement ? maxLengthEnforced;
+  final MaxLengthEnforcement? maxLengthEnforced;
   final int? errorMaxLines;
   final List<TextInputFormatter>? inputFormatters;
   final Color? enabledBorderColor;
@@ -37,7 +38,7 @@ class ITextFormField extends StatelessWidget {
   final TextStyle? style;
   final bool disableSuffixIconConstraints;
 
-  const ITextFormField(
+  const MTextFormField(
       {Key? key,
       this.disableSuffixIconConstraints = false,
       this.obscureText = false,
@@ -86,7 +87,7 @@ class ITextFormField extends StatelessWidget {
       controller: controller,
       textInputAction: textInputAction,
       keyboardType: keyboardType,
-      cursorColor: Colors.purple,
+      cursorColor: context.primaryColor,
       cursorWidth: 1,
       autofillHints: autofillHints,
       onEditingComplete: onEditingComplete,
@@ -103,6 +104,9 @@ class ITextFormField extends StatelessWidget {
           onTap!();
         }
       },
+      style: style != null
+          ? style!.copyWith(fontSize: context.bodyLargeTextStyle!.fontSize)
+          : context.getBodyLargeTextStyle(context.onSurfaceColor),
       inputFormatters: inputFormatters ?? [],
       decoration: InputDecoration(
         suffixIconConstraints: disableSuffixIconConstraints
@@ -118,9 +122,12 @@ class ITextFormField extends StatelessWidget {
         prefixText: prefixText,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
+        suffixIconColor: context.onSurfaceVariantColor,
+        prefixIconColor: context.onSurfaceVariantColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
+          borderSide: BorderSide(
+            color: context.outlineColor,
             width: 1,
             style: BorderStyle.solid,
           ),
@@ -128,21 +135,31 @@ class ITextFormField extends StatelessWidget {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-              color: enabledBorderColor ?? Colors.grey,
+              color: enabledBorderColor ?? context.outlineColor,
               width: 1,
               style: BorderStyle.solid),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-              color: Colors.purple, width: 1, style: BorderStyle.solid),
+          borderSide: BorderSide(
+              color: context.primaryColor, width: 1, style: BorderStyle.solid),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-              color: Colors.red, width: 2, style: BorderStyle.solid),
+          borderSide: BorderSide(
+              color: context.errorColor, width: 2, style: BorderStyle.solid),
         ),
+        errorStyle: context.getBodySmallTextStyle(context.errorColor),
         errorMaxLines: errorMaxLines,
+        helperStyle:
+            context.getBodySmallTextStyle(context.onSurfaceVariantColor),
+        hintStyle: context.getBodyMediumTextStyle(context.onSurfaceVariantColor),
+        //Commenting labels as their colors are determined by the state of the text field
+        /*labelStyle:
+            context.getBodyLargeTextStyle(context.onSurfaceVariantColor),
+        floatingLabelStyle: context.getBodySmallTextStyle(context.primaryColor),*/
+        prefixStyle: context
+            .getBodyLargeTextStyle(context.onSurfaceColor.withOpacity(0.5)),
       ),
     );
   }

@@ -119,7 +119,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
             provider.state.isAfterSearch == false) {
           return Container();
         }
-        return ITextFormField(
+        return MTextFormField(
           controller: searchController,
           textInputAction: TextInputAction.done,
           textCapitalization: TextCapitalization.sentences,

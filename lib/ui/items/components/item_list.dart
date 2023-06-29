@@ -1,12 +1,7 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, sized_box_for_whitespace, sort_child_properties_last
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/material_components/cards/elevated_card.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/screens/invoices/model/bill_product_item_model.dart';
-import 'package:mezink_app/styles/color.dart';
+import '../../../model/bill_product_item_model.dart';
+import '../../components/elevated_card.dart';
 
 class ItemListInvoiceItem extends StatelessWidget {
   const ItemListInvoiceItem({
@@ -31,15 +26,15 @@ class ItemListInvoiceItem extends StatelessWidget {
         "${model.currencyCode} ${NumberFormat('#,###').format(model.price)}";
     String tax = model.taxPercent == 0
         ? ""
-        : " | ${S.current.tax} ${model.taxPercent.toString()}%";
+        : " | tax ${model.taxPercent.toString()}%";
     String discount = model.discountPercent == 0
         ? ""
-        : " | ${S.current.discount.substring(0, 4)} ${model.discountPercent.toString()}%";
+        : " | disc ${model.discountPercent.toString()}%";
     String subtitle = "$price$tax$discount";
-    return MElevatedCard(
-      margin: EdgeInsets.only(bottom: 15),
+    return ElevatedCard(
+      margin: const EdgeInsets.only(bottom: 15),
       child: Container(
-        margin: EdgeInsets.only(
+        margin: const EdgeInsets.only(
           left: 15,
         ),
         child: Row(
@@ -50,17 +45,12 @@ class ItemListInvoiceItem extends StatelessWidget {
                 contentPadding: EdgeInsets.zero,
                 title: Text.rich(
                   TextSpan(
-                    text: model.name,
-                    style: context.getTitleMediumTextStyle(model.isDeleted ? MColors.lightGrey3 : context.onSurfaceColor)
-
-                  ),
+                    text: model.name),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(
-                  subtitle,
-                  style: context.getTitleSmallTextStyle(model.isDeleted ? MColors.lightGrey3 : MColors.lightGrey)
-                ),
+                  subtitle),
               ),
             ),
             Expanded(
@@ -79,7 +69,6 @@ class ItemListInvoiceItem extends StatelessWidget {
                             .qty
                             .toString()
                         : model.qty.toString(),
-                    style: context.getTitleMediumTextStyle(context.onSurfaceColor),
                   ),
                   buildCircleBorderButton(
                     icons: Icons.add,
@@ -91,29 +80,24 @@ class ItemListInvoiceItem extends StatelessWidget {
             ),
             Container(
               width: 25,
-              margin: EdgeInsets.only(left: 10),
+              margin: const EdgeInsets.only(left: 10),
               child: PopupMenuButton(
                 padding: const EdgeInsets.all(0),
-                child: Icon(
+                child: const Icon(
                   Icons.more_vert_rounded,
-                  color: model.isDeleted ? MColors.lightGrey3 : null,
                 ),
                 itemBuilder: (context) {
                   if (!model.isDeleted) {
                     return [
                       PopupMenuItem(
-                        child: Text(
-                          S.current.edit,
-                        ),
                         value: 1,
                         onTap: onEdit,
+                        child: const Text('edit'),
                       ),
                       PopupMenuItem(
-                        child: Text(
-                          S.current.delete,
-                        ),
                         value: 2,
                         onTap: onDelete,
+                        child: const Text('delete'),
                       )
                     ];
                   }
@@ -133,15 +117,11 @@ class ItemListInvoiceItem extends StatelessWidget {
       onTap: onTap,
       child: CircleAvatar(
         radius: 10.5,
-        backgroundColor:
-            model.isDeleted ? MColors.lightGrey3.withOpacity(0.2) : context.primaryColor,
         child: CircleAvatar(
           radius: 10,
-          backgroundColor: MColors.transparent,
           child: Icon(
             icons,
             size: 15,
-            color: model.isDeleted ? MColors.lightGrey3 : context.primaryContainerColor,
           ),
         ),
       ),
