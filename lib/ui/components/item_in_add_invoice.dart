@@ -1,13 +1,6 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_string_interpolations
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mezink_app/material_components/cards/elevated_card.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/screens/invoices/model/bill_product_item_model.dart';
-import 'package:mezink_app/styles/color.dart';
-
-import '../../../../generated/l10n.dart';
+import '../../model/bill_product_item_model.dart';
 
 class ItemInAddInvoiceScreen extends StatefulWidget {
   const ItemInAddInvoiceScreen({
@@ -40,32 +33,28 @@ class _ItemInAddInvoiceScreenState extends State<ItemInAddInvoiceScreen> {
       onTap: () {
         changeDefaultToExpanded();
       },
-      child: MElevatedCard(
-        margin: EdgeInsets.only(bottom: 15),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 15),
         child: Container(
-          margin: EdgeInsets.all(15),
+          margin: const EdgeInsets.all(15),
           child: Column(
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(
-                      widget.model.name,
-                      style: context.getTitleMediumTextStyle(context.onSurfaceColor)
-                    ),
+                    child: Text(widget.model.name),
                   ),
                   Expanded(
                     child: Text(
                       "${widget.model.currencyCode} ${NumberFormat('#,###').format(subTotalPerItem)}",
                       textAlign: TextAlign.right,
-                      style: context.getTitleMediumTextStyle(context.onSurfaceColor)
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 5,
+              const SizedBox(
+                height: 5.0,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +62,6 @@ class _ItemInAddInvoiceScreenState extends State<ItemInAddInvoiceScreen> {
                   Expanded(
                     child: Text(
                       "${widget.model.qty} x ${widget.model.currencyCode.toUpperCase()} ${NumberFormat('#,###').format(widget.model.price)}",
-                      style: context.getTitleSmallTextStyle(MColors.grey)
                     ),
                   ),
                   Expanded(
@@ -81,10 +69,9 @@ class _ItemInAddInvoiceScreenState extends State<ItemInAddInvoiceScreen> {
                       onTap: () {
                         changeDefaultToExpanded();
                       },
-                      child: Text(
-                        "${S.current.detail} >",
+                      child: const Text(
+                        "detail >",
                         textAlign: TextAlign.right,
-                        style: context.getLabelMediumTextStyle(MColors.primaryBlue)
                       ),
                     ),
                   ),
@@ -107,116 +94,100 @@ class _ItemInAddInvoiceScreenState extends State<ItemInAddInvoiceScreen> {
       onTap: () {
         changeDefaultToExpanded();
       },
-      child: MElevatedCard(
-        margin: EdgeInsets.only(bottom: 15),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 15),
         child: Container(
-          margin: EdgeInsets.all(15),
+          margin: const EdgeInsets.all(15),
           child: Column(
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(
-                      widget.model.name,
-                      style: context.getTitleMediumTextStyle(context.onSurfaceColor),
-                    ),
+                    child: Text(widget.model.name,),
                   ),
                   Expanded(
                     child: Text(
                       "${widget.model.currencyCode} ${NumberFormat('#,###').format(subTotalPerItem)}",
                       textAlign: TextAlign.right,
-                      style: context.getTitleMediumTextStyle(context.onSurfaceColor),
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 5,
+              const SizedBox(
+                height: 5.0,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      S.current.unit_price,
-                      style: context.getBodyMediumTextStyle(MColors.lightGrey),
-                    ),
+                  const Expanded(
+                    child: Text('unit price',),
                   ),
                   Expanded(
                     child: Text(
                       "${widget.model.currencyCode} ${NumberFormat('#,###').format(widget.model.price)}",
                       textAlign: TextAlign.right,
-                      style: context.getBodyMediumTextStyle(MColors.lightGrey),
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 5,
+              const SizedBox(
+                height: 5.0,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
+                  const Expanded(
                     child: Text(
-                      S.current.quantity,
-                      style: context.getBodyMediumTextStyle(MColors.lightGrey),
+                     'quantity',
                     ),
                   ),
                   Expanded(
                     child: Text(
                       "${widget.model.qty}",
                       textAlign: TextAlign.right,
-                      style: context.getBodyMediumTextStyle(MColors.lightGrey),
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 5,
+              const SizedBox(
+                height: 5.0,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text("discount @ ${widget.model.discountPercent}%"),
+                  ),
+                  Expanded(
+                    child: Text(
+                      NumberFormat('#,###').format(nominalDiscount),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 5.0,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(
-                      "${S.current.discount} @ ${widget.model.discountPercent}%",
-                      style: context.getBodyMediumTextStyle(MColors.lightGrey),
+                      "tax @ ${widget.model.taxPercent}%",
                     ),
                   ),
                   Expanded(
                     child: Text(
-                      "${NumberFormat('#,###').format(nominalDiscount)}",
+                      NumberFormat('#,###').format(nominalTax),
                       textAlign: TextAlign.right,
-                      style: context.getBodyMediumTextStyle(MColors.lightGrey),
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      "${S.current.tax} @ ${widget.model.taxPercent}%",
-                      style: context.getBodyMediumTextStyle(MColors.lightGrey),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "${NumberFormat('#,###').format(nominalTax)}",
-                      textAlign: TextAlign.right,
-                      style: context.getBodyMediumTextStyle(MColors.lightGrey),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
+              const SizedBox(
+                height: 10.0,
               ),
               Row(
                 children: [
@@ -225,10 +196,9 @@ class _ItemInAddInvoiceScreenState extends State<ItemInAddInvoiceScreen> {
                       onTap: () {
                         changeDefaultToExpanded();
                       },
-                      child: Text(
-                        S.current.hide,
+                      child: const Text(
+                        'hide',
                         textAlign: TextAlign.right,
-                        style: context.getLabelMediumTextStyle(MColors.primaryBlue),
                       ),
                     ),
                   ),

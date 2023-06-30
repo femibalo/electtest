@@ -1,9 +1,5 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, sized_box_for_whitespace, sort_child_properties_last
-
 import 'package:flutter/material.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/screens/invoices/model/client_invoice_model.dart';
+import '../../../model/client_invoice_model.dart';
 
 class ItemListClientInvoice extends StatelessWidget {
   const ItemListClientInvoice({
@@ -31,7 +27,7 @@ class ItemListClientInvoice extends StatelessWidget {
               child: RadioListTile(
                 contentPadding: EdgeInsets.zero,
                 value: model,
-                activeColor: context.primaryColor,
+                activeColor: Colors.blue,
                 groupValue: groupValue,
                 onChanged: (val) {
                   if (!model.isDeleted) {
@@ -49,36 +45,35 @@ class ItemListClientInvoice extends StatelessWidget {
                     text: model.displayName == ''
                         ? model.name
                         : model.displayName,
-                    style :context.getTitleMediumTextStyle(context.onSurfaceColor)
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               width: 40,
               child: PopupMenuButton(
                 padding: const EdgeInsets.all(0),
-                child: Icon(
+                child: const Icon(
                   Icons.more_vert_rounded,
                 ),
                 itemBuilder: (context) => model.isDeleted
                     ? []
                     : [
                         PopupMenuItem(
-                          child: Text(
-                            S.current.edit,
-                          ),
                           value: 1,
                           onTap: onEdit,
+                          child: const Text(
+                            'edit',
+                          ),
                         ),
                         PopupMenuItem(
-                          child: Text(
-                            S.current.delete,
-                          ),
                           value: 2,
                           onTap: onDelete,
+                          child: const Text(
+                            'delete',
+                          ),
                         )
                       ],
               ),

@@ -1,13 +1,7 @@
-// ignore_for_file: prefer_const_constructors, sort_child_properties_last
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/material_components/cards/elevated_card.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/screens/invoices/model/invoice_list_model.dart';
-import 'package:mezink_app/styles/color.dart';
-import 'package:mezink_app/utils/common/utils.dart';
+import '../../model/invoice_list_model.dart';
+import '../../utils/utils.dart';
 
 class InvoiceItem extends StatelessWidget {
   const InvoiceItem({
@@ -28,9 +22,9 @@ class InvoiceItem extends StatelessWidget {
   final VoidCallback onMarkAsPaid;
   @override
   Widget build(BuildContext context) {
-    return MElevatedCard(
+    return Card(
       child: Container(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
           bottom: 15,
           left: 15,
           top: 15,
@@ -48,7 +42,6 @@ class InvoiceItem extends StatelessWidget {
                         flex: 2,
                         child: Text(
                           model.clientName,
-                          style: context.getBodyMediumTextStyle(context.onSurfaceColor)
                         ),
                       ),
                       Expanded(
@@ -57,13 +50,12 @@ class InvoiceItem extends StatelessWidget {
                             DateFormat('yyyy-MM-dd').parse(model.invoiceDate),
                           ),
                           textAlign: TextAlign.right,
-                          style: context.getBodySmallTextStyle(context.onSurfaceColor)
                         ),
                       ),
                     ],
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 5),
+                    margin: const EdgeInsets.only(top: 5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -71,7 +63,6 @@ class InvoiceItem extends StatelessWidget {
                           flex: 2,
                           child: Text(
                             "${model.currencyCode.toUpperCase()} ${NumberFormat("#,###").format(model.finalPrice)}",
-                            style: context.getBodyMediumTextStyle(context.onSurfaceColor)
                           ),
                         ),
                         Expanded(
@@ -79,7 +70,7 @@ class InvoiceItem extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 8,
                                   vertical: 5,
                                 ),
@@ -87,19 +78,12 @@ class InvoiceItem extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(30),
                                   border: Border.all(
                                     width: 1,
-                                    color: model.status != 4
-                                        ? context.primaryColor
-                                        : MColors.successColor,
+                                    color: Colors.green,
                                   ),
                                 ),
-                                child: Text(
-                                  model.status != 4
-                                      ? S.current.pending.toLowerCase()
-                                      : S.current.paid.toLowerCase(),
+                                child: const Text(
+                                  'paid',
                                   textAlign: TextAlign.center,
-                                  style: context.getBodySmallTextStyle(model.status != 4
-                                        ? context.primaryColor
-                                        : MColors.successColor)
                                 ),
                               ),
                             ],
@@ -113,39 +97,39 @@ class InvoiceItem extends StatelessWidget {
             ),
             PopupMenuButton(
               padding: const EdgeInsets.all(0),
-              child: Icon(
+              child: const Icon(
                 Icons.more_vert_rounded,
               ),
               itemBuilder: (context) {
                 if (model.status != 4) {
                   return [
                     PopupMenuItem(
-                      child: Text(S.current.view_invoice),
                       value: 1,
                       onTap: onViewInvoice,
+                      child: const Text('view invoice'),
                     ),
                     PopupMenuItem(
-                      child: Text(S.current.edit),
                       value: 2,
                       onTap: onEdit,
+                      child: const Text('edit'),
                     ),
                     PopupMenuItem(
-                      child: Text(S.current.send_invoice),
                       value: 3,
                       onTap: onSendInvoice,
+                      child: const Text('send invoice'),
                     ),
                     PopupMenuItem(
-                      child: Text(S.current.mark_as_paid),
                       value: 4,
                       onTap: onMarkAsPaid,
+                      child: const Text('mark as paid'),
                     ),
                   ];
                 }
                 return [
                   PopupMenuItem(
-                    child: Text(S.current.view_invoice),
                     value: 1,
                     onTap: onViewInvoice,
+                    child: const Text('view invoice'),
                   ),
                 ];
               },

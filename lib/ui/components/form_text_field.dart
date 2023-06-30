@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/services/text_formatter.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
+import 'package:flutter/services.dart';
 
 class MTextFormField extends StatelessWidget {
   final bool obscureText;
@@ -87,7 +86,7 @@ class MTextFormField extends StatelessWidget {
       controller: controller,
       textInputAction: textInputAction,
       keyboardType: keyboardType,
-      cursorColor: context.primaryColor,
+      cursorColor: Colors.blue,
       cursorWidth: 1,
       autofillHints: autofillHints,
       onEditingComplete: onEditingComplete,
@@ -104,9 +103,6 @@ class MTextFormField extends StatelessWidget {
           onTap!();
         }
       },
-      style: style != null
-          ? style!.copyWith(fontSize: context.bodyLargeTextStyle!.fontSize)
-          : context.getBodyLargeTextStyle(context.onSurfaceColor),
       inputFormatters: inputFormatters ?? [],
       decoration: InputDecoration(
         suffixIconConstraints: disableSuffixIconConstraints
@@ -122,44 +118,27 @@ class MTextFormField extends StatelessWidget {
         prefixText: prefixText,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
-        suffixIconColor: context.onSurfaceVariantColor,
-        prefixIconColor: context.onSurfaceVariantColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: context.outlineColor,
+          borderSide: const BorderSide(
             width: 1,
             style: BorderStyle.solid,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: enabledBorderColor ?? context.outlineColor,
+          borderSide: const BorderSide(
               width: 1,
               style: BorderStyle.solid),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: context.primaryColor, width: 1, style: BorderStyle.solid),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: context.errorColor, width: 2, style: BorderStyle.solid),
+          borderSide: const BorderSide( width: 2, style: BorderStyle.solid),
         ),
-        errorStyle: context.getBodySmallTextStyle(context.errorColor),
         errorMaxLines: errorMaxLines,
-        helperStyle:
-            context.getBodySmallTextStyle(context.onSurfaceVariantColor),
-        hintStyle: context.getBodyMediumTextStyle(context.onSurfaceVariantColor),
-        //Commenting labels as their colors are determined by the state of the text field
-        /*labelStyle:
-            context.getBodyLargeTextStyle(context.onSurfaceVariantColor),
-        floatingLabelStyle: context.getBodySmallTextStyle(context.primaryColor),*/
-        prefixStyle: context
-            .getBodyLargeTextStyle(context.onSurfaceColor.withOpacity(0.5)),
       ),
     );
   }

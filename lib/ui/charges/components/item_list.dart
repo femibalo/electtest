@@ -1,14 +1,6 @@
-// ignore_for_file: sort_child_properties_last, prefer_const_constructors, sized_box_for_whitespace
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mezink_app/material_components/cards/elevated_card.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/screens/invoices/model/invoice_charge_model.dart';
-import 'package:mezink_app/styles/color.dart';
-import 'package:mezink_app/utils/common/api_keys.dart';
-
-import '../../../../../generated/l10n.dart';
+import '../../../model/invoice_charge_model.dart';
 
 class ItemListChargesInvoice extends StatelessWidget {
   const ItemListChargesInvoice({
@@ -25,15 +17,15 @@ class ItemListChargesInvoice extends StatelessWidget {
   final VoidCallback onDelete;
   @override
   Widget build(BuildContext context) {
-    return MElevatedCard(
-      margin: EdgeInsets.only(bottom: 15),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 15),
       child: Row(
         children: [
           Expanded(
             child: CheckboxListTile(
-              contentPadding: EdgeInsets.only(left: 5),
+              contentPadding: const EdgeInsets.only(left: 5),
               value: model.isSelected,
-              activeColor: context.primaryColor,
+              activeColor: Colors.blue,
               onChanged: (val) {
                 onTap();
               },
@@ -41,46 +33,41 @@ class ItemListChargesInvoice extends StatelessWidget {
               title: Text.rich(
                 TextSpan(
                   text: model.name,
-                  style: context.getTitleMediumTextStyle(context.onSurfaceColor)
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
                 model.operation == '-'
-                    ? toBeginningOfSentenceCase(S.current.subtract)!
-                    : toBeginningOfSentenceCase(S.current.add)!,
-                  style: context.getLabelLargeTextStyle(MColors.lightGrey)
+                    ? toBeginningOfSentenceCase('subtract')!
+                    : toBeginningOfSentenceCase('add')!,
               ),
               secondary: Text(
-                model.type == APIKeys.percent
-                    ? "${model.value.toString()}%"
-                    : NumberFormat('#,###').format(model.value).toString(),
-                  style: context.getTitleMediumTextStyle(context.onSurfaceColor)
+                  "${model.value.toString()}%"
               ),
             ),
           ),
-          Container(
+          SizedBox(
             width: 40,
             child: PopupMenuButton(
               padding: const EdgeInsets.all(0),
-              child: Icon(
+              child: const Icon(
                 Icons.more_vert_rounded,
               ),
               itemBuilder: (context) => [
                 PopupMenuItem(
-                  child: Text(
-                    S.current.edit,
-                  ),
                   value: 1,
                   onTap: onEdit,
+                  child: const Text(
+                    'edit',
+                  ),
                 ),
                 PopupMenuItem(
-                  child: Text(
-                    S.current.delete,
-                  ),
                   value: 2,
                   onTap: onDelete,
+                  child: const Text(
+                   'delete',
+                  ),
                 )
               ],
             ),

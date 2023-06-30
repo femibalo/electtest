@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/styles/color.dart';
-import 'package:mezink_app/styles/font.dart';
 
 MaterialButton roundedButtonAddInvoice({
-  Color? buttonColor = MColors.primaryBlue,
-  Color? textColor = MColors.white,
+  Color? buttonColor = Colors.blue,
+  Color? textColor = Colors.white,
   required VoidCallback onPressed,
   required String text,
   bool isOutlineButton = false,
@@ -13,20 +10,15 @@ MaterialButton roundedButtonAddInvoice({
   return MaterialButton(
     shape: RoundedRectangleBorder(
       side: isOutlineButton
-          ? BorderSide(width: 1, color: MColors.primaryBlue)
+          ? const BorderSide(width: 1, color: Colors.blue)
           : BorderSide.none,
       borderRadius: BorderRadius.circular(30),
     ),
     elevation: 0,
     color: isOutlineButton ? Colors.transparent : buttonColor,
-    textColor: isOutlineButton ? MColors.primaryBlue : textColor,
     onPressed: onPressed,
     child: Text(
       text,
-      // style: Fonts.dmSans400With12PX.copyWith(
-      //   fontWeight: FontWeight.w500,
-      //   fontSize: 16,
-      // ),
     ),
   );
 }
@@ -63,10 +55,7 @@ class ButtonInvoiceDetail extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              Text(
-                textButton,
-                style: context.getTitleMediumTextStyle(context.onSurfaceColor),
-              ),
+              Text(textButton),
             ],
           ),
         ),
