@@ -1,25 +1,15 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
 import 'dart:io';
-
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttercontactpicker/fluttercontactpicker.dart';
-import 'package:mezink_app/commands/email_validator.dart';
-import 'package:mezink_app/components/error_screens.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/text_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/material_components/text_field/form_text_field.dart';
-import 'package:mezink_app/routes/app_routing.gr.dart';
-import 'package:mezink_app/screens/invoices/api/client_api.dart';
-import 'package:mezink_app/screens/invoices/model/client_invoice_model.dart';
-import 'package:mezink_app/styles/progress_indicator.dart';
-import 'package:mezink_app/utils/common/utils.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/common/snack_bar.dart';
+import '../../api/client_api.dart';
+import '../../model/client_invoice_model.dart';
+import '../components/error_screens.dart';
+import '../components/form_text_field.dart';
+import '../components/snack_bar.dart';
+import 'components/email_validator.dart';
+
 
 class AddClientScreen extends StatefulWidget {
   final int clientID;
@@ -35,8 +25,7 @@ class AddClientScreen extends StatefulWidget {
   static const String id = "addClientInvoice";
   static void launchScreen(BuildContext context, int clientId, bool isEditMode,
       Function(UserClientInvoice) onSaved) {
-    context.router.push<UserClientInvoice>(AddClientScreenRoute(
-        onSavedNewClient: onSaved, clientID: clientId, isEditMode: isEditMode));
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddClientScreen(onSavedNewClient: onSaved, clientID: clientId, isEditMode: isEditMode)));
   }
 
   @override
@@ -62,44 +51,8 @@ class _AddClientScreenState extends State<AddClientScreen> {
     super.initState();
     provider = Provider.of<ClientInvoiceProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      loadForm();
-    });
-  }
 
-  loadForm() {
-    setState(() {
-      provider.states.isError = false;
-      provider.states.isNetworkError = false;
     });
-    if (widget.isEditMode) {
-      provider.getDetailClient(widget.clientID).then((value) {
-        if (value != false) {
-          var selectedDetailClient = provider.states.selectedDetailClient;
-          // if return true == success load data from api
-          nameController.text = selectedDetailClient.name.toString();
-          emailController.text = selectedDetailClient.email.toString();
-          phoneController.text = selectedDetailClient.phone.toString();
-          billingAddressController.text =
-              selectedDetailClient.billingAddress.toString();
-          cityController.text = selectedDetailClient.city.toString();
-          stateController.text = selectedDetailClient.state.toString();
-          pinCodeController.text = selectedDetailClient.pinCode.toString();
-          billingPhoneNumberController.text =
-              selectedDetailClient.billingPhoneNumber.toString();
-          displayNameController.text =
-              selectedDetailClient.displayName.toString();
-
-          // check if add billing address not empty, will set active add billing address status
-          if (billingAddressController.text.isNotEmpty ||
-              cityController.text.isNotEmpty ||
-              stateController.text.isNotEmpty ||
-              pinCodeController.text.isNotEmpty ||
-              billingPhoneNumberController.text.isNotEmpty) {
-            provider.changeStatusBillingAddress(true);
-          }
-        }
-      });
-    }
   }
 
   validation() {
@@ -123,47 +76,13 @@ class _AddClientScreenState extends State<AddClientScreen> {
       displayName: displayNameController.toString().isEmpty
           ? nameController.text.toString()
           : displayNameController.text.toString(),
-    )
-        .then((value) {
-      if (value.success) {
-        widget.onSavedNewClient(UserClientInvoice(
-          id: value.data, // entity id from api return
-          name: nameController.text.toString(),
-          email: emailController.text.toString(),
-          phone: phoneController.text.toString(),
-          billingAddress: billingAddressController.text.toString(),
-          city: cityController.text.toString(),
-          state: stateController.text.toString(),
-          pinCode: pinCodeController.text.toString(),
-          billingPhoneNumber: billingPhoneNumberController.text.toString(),
-          displayName: displayNameController.toString().isEmpty
-              ? nameController.text.toString()
-              : displayNameController.text.toString(),
-        ));
-        reset();
-        if (widget.isEditMode) {
-          showSnackBar(
-            context: context,
-            text: S.current.edit_client_success,
-            snackBarType: SnackBarType.success,
-          );
-          return;
-        } else {
-          showSnackBar(
-            context: context,
-            text: S.current.add_client_success,
-            snackBarType: SnackBarType.success,
-          );
-          return;
-        }
-      } else {
-        showSnackBar(
-          context: context,
-          text: value.error,
-          snackBarType: SnackBarType.error,
-        );
-        return;
-      }
+    ).then((value) {
+      showSnackBar(
+        context: context,
+        text: 'edit client success',
+        snackBarType: SnackBarType.success,
+      );
+      return;
     });
   }
 
@@ -221,11 +140,10 @@ class _AddClientScreenState extends State<AddClientScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<ClientInvoiceProvider>(context);
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      appBar: MAppBar(
-        title: widget.isEditMode
-            ? S.current.edit_client
-            : S.current.add_new_client,
+      appBar: AppBar(
+        title: Text(widget.isEditMode
+            ? 'edit client'
+            :'add new client'),
         actions: [_buildSaveButton(provider.states)],
       ),
       body: _getWidgetBasedOnState(provider.states),
@@ -234,25 +152,24 @@ class _AddClientScreenState extends State<AddClientScreen> {
 
   Widget _buildSaveButton(ClientInvoiceState state) {
     if (state.isNetworkError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.isError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.loading) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: TextButton(
         onPressed: () {
           validation();
         },
-        child: Text(S.current.save),
+        child: const Text('save'),
       ),
     );
   }
@@ -260,18 +177,18 @@ class _AddClientScreenState extends State<AddClientScreen> {
   Widget _getWidgetBasedOnState(ClientInvoiceState state) {
     if (state.loading) {
       return const Center(
-        child: AdaptiveProgressIndicator(),
+        child: CircularProgressIndicator(),
       );
     }
     if (state.isNetworkError) {
       return NetworkErrorWidget(onRefresh: () {
-        loadForm();
+
       });
     }
 
     if (state.isError) {
       return GenericErrorWidget(onRefresh: () {
-        loadForm();
+
       });
     }
 
@@ -288,12 +205,11 @@ class _AddClientScreenState extends State<AddClientScreen> {
           right: 20,
           bottom: MediaQuery.of(context).size.height * 0.1,
         ),
-        physics: customScrollPhysics(),
         shrinkWrap: true,
         children: [
           // === import client button
           Container(
-            margin: EdgeInsets.only(
+            margin: const EdgeInsets.only(
               top: 20,
               left: 10,
             ),
@@ -303,7 +219,7 @@ class _AddClientScreenState extends State<AddClientScreen> {
               },
               borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: EdgeInsets.only(
+                padding: const EdgeInsets.only(
                   left: 15,
                   right: 15,
                   top: 10,
@@ -317,15 +233,12 @@ class _AddClientScreenState extends State<AddClientScreen> {
                       "assets/images/import_contact.png",
                       width: 20,
                       height: 20,
-                      color: context.primaryColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Text(
-                      S.current.import_from_contact,
-                      style:
-                          context.getTitleMediumTextStyle(context.primaryColor),
+                    const Text(
+                      'import from contact',
                     )
                   ],
                 ),
@@ -340,7 +253,7 @@ class _AddClientScreenState extends State<AddClientScreen> {
               children: [
                 // === client name
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                     controller: nameController,
                     textInputAction: TextInputAction.next,
@@ -348,18 +261,18 @@ class _AddClientScreenState extends State<AddClientScreen> {
                     maxLines: 1,
                     validator: (string) {
                       if (string.toString().isEmpty) {
-                        return S.current.client_name_empty;
+                        return 'client name empty';
                       }
                       return null;
                     },
-                    labelText: S.current.client_name,
+                    labelText: 'client name',
                   ),
                 ),
                 // === client name
 
                 // === client email
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                     controller: emailController,
                     textInputAction: TextInputAction.next,
@@ -367,20 +280,20 @@ class _AddClientScreenState extends State<AddClientScreen> {
                     maxLines: 1,
                     validator: (string) {
                       if (string.toString().isEmpty) {
-                        return S.current.client_email_empty;
+                        return 'client email empty';
                       } else if (!EmailValidator.validate(string.toString())) {
-                        return S.current.enter_valid_email;
+                        return 'enter valid email';
                       }
                       return null;
                     },
-                    labelText: S.current.email,
+                    labelText: 'email',
                   ),
                 ),
                 // === client email
 
                 // === client phone
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                     controller: phoneController,
                     textInputAction: TextInputAction.next,
@@ -388,37 +301,36 @@ class _AddClientScreenState extends State<AddClientScreen> {
                     textCapitalization: TextCapitalization.words,
                     maxLines: 1,
                     maxLength: 15,
-                    labelText: S.current.contact_number,
+                    labelText: 'contact number',
                   ),
                 ),
                 // === client phone
 
                 // === client display name
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                     controller: displayNameController,
                     textInputAction: TextInputAction.done,
                     textCapitalization: TextCapitalization.words,
                     maxLines: 1,
-                    labelText: S.current.contact_display_name,
+                    labelText: 'contact display name',
                   ),
                 ),
                 // === client name
 
                 Container(
-                  margin: EdgeInsets.only(top: 25),
-                  child: Divider(),
+                  margin: const EdgeInsets.only(top: 25),
+                  child: const Divider(),
                 ),
 
                 // === add billing address
                 Container(
-                  margin: EdgeInsets.only(top: 10.0),
+                  margin: const EdgeInsets.only(top: 10.0),
                   child: Column(
                     children: [
                       SwitchListTile(
                         value: provider.states.isAddBillingAddressActive,
-                        activeColor: context.primaryColor,
                         onChanged: (val) {
                           provider.changeStatusBillingAddress(val);
                           if (!val) {
@@ -431,14 +343,12 @@ class _AddClientScreenState extends State<AddClientScreen> {
                             });
                           }
                         },
-                        contentPadding: EdgeInsets.only(
+                        contentPadding: const EdgeInsets.only(
                           left: 5,
                           right: 5,
                         ),
-                        title: Text(
-                          S.current.add_billing_address,
-                          style: context
-                              .getTitleMediumTextStyle(context.onSurfaceColor),
+                        title: const Text(
+                          'add billing address',
                         ),
                       ),
                       Builder(
@@ -449,7 +359,7 @@ class _AddClientScreenState extends State<AddClientScreen> {
                               children: [
                                 // === client street address
                                 Container(
-                                  margin: EdgeInsets.only(top: 25),
+                                  margin: const EdgeInsets.only(top: 25),
                                   child: MTextFormField(
                                     controller: billingAddressController,
                                     textInputAction: TextInputAction.next,
@@ -457,14 +367,14 @@ class _AddClientScreenState extends State<AddClientScreen> {
                                     textCapitalization:
                                         TextCapitalization.words,
                                     maxLines: 1,
-                                    labelText: S.current.street_address,
+                                    labelText: 'street address',
                                   ),
                                 ),
                                 // === client street address
 
                                 // === client city
                                 Container(
-                                  margin: EdgeInsets.only(top: 25),
+                                  margin: const EdgeInsets.only(top: 25),
                                   child: MTextFormField(
                                     controller: cityController,
                                     textInputAction: TextInputAction.next,
@@ -472,14 +382,14 @@ class _AddClientScreenState extends State<AddClientScreen> {
                                     textCapitalization:
                                         TextCapitalization.words,
                                     maxLines: 1,
-                                    labelText: S.current.city,
+                                    labelText: 'city',
                                   ),
                                 ),
                                 // === client city
 
                                 // === client state
                                 Container(
-                                  margin: EdgeInsets.only(top: 25),
+                                  margin: const EdgeInsets.only(top: 25),
                                   child: MTextFormField(
                                     controller: stateController,
                                     textInputAction: TextInputAction.next,
@@ -487,14 +397,14 @@ class _AddClientScreenState extends State<AddClientScreen> {
                                     textCapitalization:
                                         TextCapitalization.words,
                                     maxLines: 1,
-                                    labelText: S.current.state,
+                                    labelText: 'state',
                                   ),
                                 ),
                                 // === client state
 
                                 // === client pin code
                                 Container(
-                                  margin: EdgeInsets.only(top: 25),
+                                  margin: const EdgeInsets.only(top: 25),
                                   child: MTextFormField(
                                     controller: pinCodeController,
                                     textInputAction: TextInputAction.next,
@@ -508,19 +418,19 @@ class _AddClientScreenState extends State<AddClientScreen> {
                                       if (provider
                                           .states.isAddBillingAddressActive) {
                                         if (!regex.hasMatch(str.toString())) {
-                                          return 'Pincode not valid';
+                                          return 'Pin code not valid';
                                         }
                                       }
                                       return null;
                                     },
-                                    labelText: S.current.pin_code,
+                                    labelText: 'pin code',
                                   ),
                                 ),
                                 // === client pin code
 
                                 // === client billing contact number
                                 Container(
-                                  margin: EdgeInsets.only(top: 25),
+                                  margin: const EdgeInsets.only(top: 25),
                                   child: MTextFormField(
                                     controller: billingPhoneNumberController,
                                     textInputAction: TextInputAction.next,
@@ -529,14 +439,14 @@ class _AddClientScreenState extends State<AddClientScreen> {
                                         TextCapitalization.words,
                                     maxLines: 1,
                                     maxLength: 15,
-                                    labelText: S.current.contact_number,
+                                    labelText: 'contact number',
                                   ),
                                 ),
                                 // === client billing contact number
                               ],
                             );
                           }
-                          return Opacity(opacity: 0);
+                          return const Opacity(opacity: 0);
                         },
                       )
                     ],
@@ -551,12 +461,11 @@ class _AddClientScreenState extends State<AddClientScreen> {
     );
     return RefreshIndicator(
       onRefresh: () async {
-        loadForm();
+
       },
       child: ListView(
         padding: EdgeInsets.zero,
         children: children,
-        physics: customScrollPhysics(alwaysScroll: true),
       ),
     );
   }

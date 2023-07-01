@@ -1,28 +1,16 @@
-// ignore_for_file: prefer_const_constructors, sort_child_properties_last, avoid_unnecessary_containers
-
 import 'dart:async';
-
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/filled_button.dart';
-import 'package:mezink_app/material_components/buttons/text_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/material_components/text_field/form_text_field.dart';
-import 'package:mezink_app/routes/app_routing.gr.dart';
-import 'package:mezink_app/screens/invoices/api/client_api.dart';
-import 'package:mezink_app/screens/invoices/api/invoice_api.dart';
-import 'package:mezink_app/screens/invoices/model/client_invoice_model.dart';
-import 'package:mezink_app/screens/invoices/ui/client/components/item_list.dart';
-import 'package:mezink_app/utils/common/snack_bar.dart';
-import 'package:mezink_app/utils/common/utils.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../components/error_screens.dart';
-import '../../../../generated/l10n.dart';
-import 'package:mezink_app/styles/progress_indicator.dart';
-
+import '../../api/client_api.dart';
+import '../../api/invoice_api.dart';
+import '../../model/client_invoice_model.dart';
+import '../add_invoice_screen.dart';
+import '../components/dialog.dart';
+import '../components/error_screens.dart';
+import '../components/form_text_field.dart';
+import '../components/snack_bar.dart';
 import 'add_client_screen.dart';
+import 'components/item_list.dart';
 
 class ClientInvoiceScreen extends StatefulWidget {
   final int? selectedClientID;
@@ -31,11 +19,10 @@ class ClientInvoiceScreen extends StatefulWidget {
       : super(key: key);
 
   static const String id = "clientInvoice";
-  static void launchScreen(BuildContext context, int selectedClientID,
-      Function(UserClientInvoice) onSaved)  {
-     context.router.push<UserClientInvoice>(ClientInvoiceScreenRoute(
-      selectedClientID: selectedClientID, onSaveSelectedClient: onSaved,
-    ));
+  static void launchScreen(BuildContext context, int selectedClientID, Function(UserClientInvoice) onSaved)  {
+     Navigator.of(context).push(MaterialPageRoute(builder: (context) => ClientInvoiceScreen(
+       selectedClientID: selectedClientID, onSaveSelectedClient: onSaved,
+     )));
   }
 
   @override
@@ -64,8 +51,7 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
       provider.getData().then((value) {
         if (widget.selectedClientID != 0) {
           provider.states.selectedClient = provider
-              .states.clientInvoiceModel.data.userClients
-              .singleWhere((e) {
+              .states.clientInvoices.singleWhere((e) {
             return e.id == widget.selectedClientID;
           });
         }
@@ -74,15 +60,7 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
-        provider.getMore().then((value) {
-          if (widget.selectedClientID != 0) {
-            provider.states.selectedClient = provider
-                .states.clientInvoiceModel.data.userClients
-                .singleWhere((e) {
-              return e.id == widget.selectedClientID;
-            });
-          }
-        });
+
       }
     });
   }
@@ -96,7 +74,7 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
     provider.getData().then((value) {
       if (widget.selectedClientID != 0) {
         provider.states.selectedClient = provider
-            .states.clientInvoiceModel.data.userClients
+            .states.clientInvoices
             .singleWhere((e) {
           return e.id == widget.selectedClientID;
         });
@@ -116,7 +94,7 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
     provider.getData().then((value) {
       if (widget.selectedClientID != 0) {
         provider.states.selectedClient = provider
-            .states.clientInvoiceModel.data.userClients
+            .states.clientInvoices
             .singleWhere((e) {
           return e.id == widget.selectedClientID;
         });
@@ -132,7 +110,7 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
   addNewClient() async {
     AddClientScreen.launchScreen(context, 0, false, (client) {
       widget.onSaveSelectedClient(client);
-      context.router.popUntilRouteWithName(AddInvoiceScreenRoute.name);
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddInvoiceScreen()));
     });
   }
 
@@ -141,14 +119,14 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
     if (provider.states.selectedClient.id != 0) {
       // id 0 means client not selected
       widget.onSaveSelectedClient(provider.states.selectedClient);
-      context.router.pop();
+      Navigator.of(context).pop();
       setState(() {
-        provider.states.selectedClient = UserClientInvoice();
+        provider.states.selectedClient = const UserClientInvoice();
       });
     } else {
       showSnackBar(
         context: context,
-        text: S.current.client_not_selected,
+        text: 'client not selected',
         snackBarType: SnackBarType.error,
       );
     }
@@ -158,7 +136,7 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
     setState(() {
       provider.states.searchQuery = "";
       provider.states.currentPage = 1;
-      provider.states.selectedClient = UserClientInvoice();
+      provider.states.selectedClient = const UserClientInvoice();
       provider.states.isAfterSearch = false;
     });
   }
@@ -175,9 +153,8 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<ClientInvoiceProvider>(context);
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      appBar: MAppBar(
-        title: S.current.select_client,
+      appBar: AppBar(
+        title: const Text('select client'),
         actions: [_buildSaveButton(provider.states)]
       ),
       body: _getWidgetBasedOnState(provider.states),
@@ -186,29 +163,28 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
 
   Widget _buildSaveButton(ClientInvoiceState state) {
     if (state.isNetworkError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.isError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.loading) {
-      return SizedBox();
+      return const SizedBox();
     }
 
-    if (state.clientInvoiceModel.data.userClients.isEmpty) {
-      return SizedBox();
+    if (state.clientInvoices.isEmpty) {
+      return const SizedBox();
     }
 
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: TextButton(
         onPressed: () {
           saveSelectedClient();
         },
-        child: Text(S.current.save),
+        child: const Text('save'),
       ),
     );
   }
@@ -241,30 +217,26 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
       // === search field
       Builder(
         builder: (ctx) {
-          if (provider.states.clientInvoiceModel.data.userClients.isEmpty &&
+          if (provider.states.clientInvoices.isEmpty &&
               provider.states.isAfterSearch == false) {
             return Container();
           }
-          return Container(
-            child: MTextFormField(
-              controller: searchController,
-              textInputAction: TextInputAction.done,
-              textCapitalization: TextCapitalization.sentences,
-              maxLines: 1,
-              onChanged: onSearchChanged,
-              labelText: S.current.search_client,
-                prefixIcon: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child: Image.asset(
-                      "assets/images/search.png",
-                      width: 24,
-                      height: 24,
-                    ),
-                  ),
-                ],
-              ),
+          return MTextFormField(
+            controller: searchController,
+            textInputAction: TextInputAction.done,
+            textCapitalization: TextCapitalization.sentences,
+            maxLines: 1,
+            onChanged: onSearchChanged,
+            labelText: 'search client',
+              prefixIcon: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  "assets/images/search.png",
+                  width: 24,
+                  height: 24,
+                ),
+              ],
             ),
           );
         },
@@ -272,33 +244,29 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
       // === search field
     );
 
-    children.add(SizedBox(
-      height: 20,
+    children.add(const SizedBox(
+      height: 20.0,
     ));
 
     children.add(
       // create new client button
       Builder(builder: (ctx) {
-        if (provider.states.clientInvoiceModel.data.userClients.isEmpty &&
+        if (provider.states.clientInvoices.isEmpty &&
             provider.states.isAfterSearch == false) {
           return Container();
         }
         return UnconstrainedBox(
-          child: MFilledButton(
+          child: ElevatedButton(
             onPressed: () {
               addNewClient();
             },
-            child: Row(
+            child: const Row(
               children: [
-                Icon(
-                  Icons.add,
-                  color: context.onPrimaryColor,
-                ),
-                const SizedBox(
+                Icon(Icons.add,),
+                SizedBox(
                   width: 4,
                 ),
-                Text(
-                  S.current.add_new_client,
+                Text('add new client',
                 ),
               ],
             ),
@@ -309,19 +277,17 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
     );
     
 
-    children.add(SizedBox(height: 20));
+    children.add(const SizedBox(height: 20));
     children.add(
       Builder(builder: (ctx) {
         if (state.loading) {
           return Container(
-            margin:
-                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.2),
-            child: Center(
-              child: AdaptiveProgressIndicator(),
+            margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.2),
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
           );
-        } else if (provider
-                .states.clientInvoiceModel.data.userClients.isEmpty &&
+        } else if (provider.states.clientInvoices.isEmpty &&
             !provider.states.isAfterSearch) {
           return Container(
             margin: EdgeInsets.only(
@@ -333,14 +299,13 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
                   onRefresh: () {
                     addNewClient();
                   },
-                  text: S.current.no_client_added,
-                  refreshButtonText: S.current.add_new_client,
+                  text: 'no client added',
+                  refreshButtonText: 'add new client',
                 ),
               ],
             ),
           );
-        } else if (provider
-                .states.clientInvoiceModel.data.userClients.isEmpty &&
+        } else if (provider.states.clientInvoices.isEmpty &&
             provider.states.isAfterSearch) {
           return Container(
             margin: EdgeInsets.only(
@@ -350,19 +315,17 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
               onRefresh: () {
                 refreshData();
               },
-              text: S.current.no_results_found,
+              text: 'No results found',
             ),
           );
         } else {
           return ListView.builder(
             itemCount:
-                provider.states.clientInvoiceModel.data.userClients.length,
+                provider.states.clientInvoices.length,
             shrinkWrap: true,
-            physics: customScrollPhysics(),
             padding: EdgeInsets.zero,
             itemBuilder: (ctx, index) {
-              var userClient =
-                  provider.states.clientInvoiceModel.data.userClients[index];
+              var userClient = provider.states.clientInvoices[index];
               return ItemListClientInvoice(
                 model: userClient,
                 groupValue: provider.states.selectedClient,
@@ -371,7 +334,7 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
                 },
                 onEdit: () {
                   AddClientScreen.launchScreen(context, userClient.id, true, (client) {
-                    context.router.pop();
+                    Navigator.of(context).pop();
                     widget.onSaveSelectedClient(client);
                     refreshData();
                   });
@@ -383,17 +346,16 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
                       const Duration(seconds: 0),
                       () {
                         showCustomAlertDialog(
-                          title: "${S.current.delete} ${userClient.name}",
-                          subTitle:
-                              S.current.are_you_sure_want_to_delete_client,
+                          title: "delete ${userClient.name}",
+                          subTitle: 'Are you sure want to delete client?',
                           context: context,
-                          leftButtonText: S.current.yes,
-                          rightButtonText: S.current.cancel,
+                          leftButtonText: 'Yes',
+                          rightButtonText: 'Cancel',
                           onLeftButtonClicked: () {
                             Navigator.of(context).pop();
                             showSnackBar(
                               context: context,
-                              text: S.current.please_wait,
+                              text: 'Please wait',
                             );
                             provider
                                 .deleteClient(clientId: userClient.id)
@@ -401,20 +363,20 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
                               if (value) {
                                 showSnackBar(
                                   context: context,
-                                  text: S.current.delete_client_success,
+                                  text: 'delete client success',
                                   snackBarType: SnackBarType.success,
                                 );
 
                                 // when delete same client as in selected client in add invoice
                                 // also delete the selected client in add invoice
                                 if(Provider.of<InvoicesProvider>(context, listen: false).state.selectedClient.id == userClient.id) {
-                                  Provider.of<InvoicesProvider>(context, listen: false).changeSelectedClient(UserClientInvoice());
-                                  provider.changeSelectedClient(UserClientInvoice());
+                                  Provider.of<InvoicesProvider>(context, listen: false).changeSelectedClient(const UserClientInvoice());
+                                  provider.changeSelectedClient(const UserClientInvoice());
                                 }
                               } else {
                                 showSnackBar(
                                   context: context,
-                                  text: S.current.delete_client_error,
+                                  text: 'Delete client error',
                                   snackBarType: SnackBarType.success,
                                 );
                               }
@@ -429,7 +391,7 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
                   } else {
                     showSnackBar(
                       context: context,
-                      text: S.current.delete_selected_client,
+                      text: 'Delete selected client',
                       snackBarType: SnackBarType.error,
                     );
                   }
@@ -450,9 +412,8 @@ class _ClientInvoiceScreenState extends State<ClientInvoiceScreen> {
           right: 20,
           bottom: MediaQuery.of(context).size.height * 0.1,
         ),
-        children: children,
         controller: scrollController,
-        physics: customScrollPhysics(alwaysScroll: true),
+        children: children,
       ),
     );
   }
