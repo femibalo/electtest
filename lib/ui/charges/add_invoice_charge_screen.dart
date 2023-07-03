@@ -1,22 +1,15 @@
-// ignore_for_file: prefer_const_constructors, sort_child_properties_last
-
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/text_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/material_components/text_field/form_text_field.dart';
-import 'package:mezink_app/utils/common/utils.dart';
 import 'package:provider/provider.dart';
-import '../../../../generated/l10n.dart';
-import '../../../../utils/common/snack_bar.dart';
 import '../../api/invoice_charge_api.dart';
 import '../../model/invoice_charge_model.dart';
+import '../components/form_text_field.dart';
+import '../components/snack_bar.dart';
 
 class AddInvoiceChargeScreen extends StatefulWidget {
   final bool isEditMode;
   final int indexCharge;
+
   const AddInvoiceChargeScreen({
     Key? key,
     this.isEditMode = false,
@@ -24,8 +17,16 @@ class AddInvoiceChargeScreen extends StatefulWidget {
   }) : super(key: key);
 
   static const String id = "addInvoiceCharges";
-  static void launchScreen(BuildContext context) {
-    context.router.pushNamed(id);
+
+  static void launchScreen(
+      {required BuildContext context,
+      required int indexCharge,
+      required bool isEditMode}) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => AddInvoiceChargeScreen(
+              isEditMode: isEditMode,
+              indexCharge: indexCharge,
+            )));
   }
 
   @override
@@ -46,34 +47,33 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
       reset();
       setValueTypeAndOperation();
       if (widget.isEditMode) {
-      nameController.text = provider.selectedCharges[widget.indexCharge].name;
-      chargeValueController.text =
-          provider.selectedCharges[widget.indexCharge].value.toString();
-      provider.changeSelectedValueType(provider.chargeValueType.singleWhere(
-          (element) =>
-              element.value ==
-              provider.selectedCharges[widget.indexCharge].type));
-      provider.changeSelectedOperationType(provider.chargeOperationType
-          .singleWhere((element) =>
-              element.value ==
-              provider.selectedCharges[widget.indexCharge].operation));
+        nameController.text = provider.selectedCharges[widget.indexCharge].name;
+        chargeValueController.text =
+            provider.selectedCharges[widget.indexCharge].value.toString();
+        provider.changeSelectedValueType(provider.chargeValueType.singleWhere(
+            (element) =>
+                element.value ==
+                provider.selectedCharges[widget.indexCharge].type));
+        provider.changeSelectedOperationType(provider.chargeOperationType
+            .singleWhere((element) =>
+                element.value ==
+                provider.selectedCharges[widget.indexCharge].operation));
       }
     });
-    
   }
 
   setValueTypeAndOperation() {
     provider.addingValueType(newValueType: [
-      InvoiceChargeValueTypeModel(title: S.current.percent, value: 'percent'),
-      InvoiceChargeValueTypeModel(title: S.current.number, value: 'number'),
+      InvoiceChargeValueTypeModel(title: 'percent', value: 'percent'),
+      InvoiceChargeValueTypeModel(title: 'number', value: 'number'),
     ]);
     provider.addingOperationType(newOperationType: [
       InvoiceChargeOperationTypeModel(
-        title: S.current.add,
+        title: 'add',
         value: '+',
       ),
       InvoiceChargeOperationTypeModel(
-        title: S.current.subtract,
+        title: 'subtract',
         value: '-',
       ),
     ]);
@@ -100,17 +100,16 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
           type: provider.selectedValueType.value,
           isSelected: provider.selectedCharges[widget.indexCharge].isSelected,
         ),
-      )
-          .then((value) {
+      ).then((value) {
         showSnackBar(
           context: context,
-          text: S.current.edit_charge_success,
+          text: 'edit charge success',
           snackBarType: SnackBarType.success,
         );
         provider.changeSelectedOperationType(provider.chargeOperationType[0]);
         provider.changeSelectedValueType(provider.chargeValueType[0]);
         reset();
-        context.router.pop();
+        Navigator.pop(context);
       });
     } else {
       provider
@@ -127,10 +126,10 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
         provider.changeSelectedOperationType(provider.chargeOperationType[0]);
         provider.changeSelectedValueType(provider.chargeValueType[0]);
         reset();
-        context.router.pop();
+        Navigator.pop(context);
         showSnackBar(
           context: context,
-          text: S.current.add_charge_success,
+          text: 'add charge success',
           snackBarType: SnackBarType.success,
         );
       });
@@ -143,12 +142,12 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     disposingResources();
   }
 
-  disposingResources(){
+  disposingResources() {
     nameController.dispose();
     chargeValueController.dispose();
   }
@@ -157,13 +156,11 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<InvoiceChargeProvider>(context);
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      appBar: MAppBar(
-        title: S.current.add_new_charge,
+      appBar: AppBar(
+        title: const Text('add new charge'),
         actions: [_buildSaveButton()],
       ),
       body: ListView(
-        physics: customScrollPhysics(),
         padding: EdgeInsets.only(
           top: 10,
           left: 20,
@@ -175,9 +172,8 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
             key: formKey,
             child: Column(
               children: [
-                // === charge name
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: MTextFormField(
                     controller: nameController,
                     textInputAction: TextInputAction.next,
@@ -185,28 +181,27 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                     maxLines: 1,
                     validator: (string) {
                       if (string == null || string.toString().trim().isEmpty) {
-                        return S.current.charge_name_empty;
+                        return 'charge name empty';
                       }
                       return null;
                     },
-                      labelText: S.current.charge_name,
+                    labelText: 'charge name',
                   ),
                 ),
                 // === charge name
 
                 // === charge value
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Text(
-                          S.current.charge_value,
-                          style: context.getTitleMediumTextStyle(context.onSurfaceColor),
+                          'charge value',
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       Expanded(
@@ -216,7 +211,7 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                           maxLines: 1,
                           keyboardType: provider.selectedValueType.value ==
                                   'percent'
-                              ? TextInputType.numberWithOptions(decimal: true)
+                              ? const TextInputType.numberWithOptions(decimal: true)
                               : TextInputType.number,
                           inputFormatters:
                               provider.selectedValueType.value == 'percent'
@@ -263,14 +258,14 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                           validator: (string) {
                             if (string == null ||
                                 string.toString().trim().isEmpty) {
-                              return S.current.charge_value_empty;
+                              return 'charge value empty';
                             }
                             return null;
                           },
                           hintText: "...",
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Expanded(
@@ -278,7 +273,7 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                           if (provider.chargeValueType.isNotEmpty) {
                             return Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.only(
+                              padding: const EdgeInsets.only(
                                 top: 5,
                                 bottom: 5,
                                 left: 10,
@@ -287,7 +282,6 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: context.outlineColor,
                                   width: 1,
                                 ),
                               ),
@@ -295,21 +289,20 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                                 enableFeedback: true,
                                 alignment: Alignment.centerLeft,
                                 value: provider.selectedValueType,
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.keyboard_arrow_down_rounded,
                                   // color: MColors.black,
                                 ),
-                                style: context.getTitleSmallTextStyle(context.onSurfaceColor),
                                 items: provider.chargeValueType.map((value) {
                                   return DropdownMenuItem(
+                                    value: value,
                                     child: Text(
                                       value.title,
                                       textAlign: TextAlign.left,
                                     ),
-                                    value: value,
                                   );
                                 }).toList(),
-                                underline: Opacity(opacity: 0),
+                                underline: const Opacity(opacity: 0),
                                 onChanged:
                                     (InvoiceChargeValueTypeModel? value) {
                                   provider.changeSelectedValueType(value!);
@@ -320,7 +313,7 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                               ),
                             );
                           }
-                          return Opacity(opacity: 0);
+                          return const Opacity(opacity: 0);
                         }),
                       ),
                     ],
@@ -330,21 +323,20 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
 
                 // === charge value
                 Container(
-                  margin: EdgeInsets.only(top: 25),
+                  margin: const EdgeInsets.only(top: 25),
                   child: Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Text(
-                          S.current.operation,
-                          style: context.getTitleMediumTextStyle(context.onSurfaceColor),
+                          'operation',
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       Expanded(
                         child: Container(
-                          margin: EdgeInsets.only(right: 10),
+                          margin: const EdgeInsets.only(right: 10),
                         ),
                       ),
                       Expanded(
@@ -355,7 +347,7 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                               children: [
                                 Container(
                                   alignment: Alignment.center,
-                                  padding: EdgeInsets.only(
+                                  padding: const EdgeInsets.only(
                                     top: 5,
                                     bottom: 5,
                                     left: 10,
@@ -364,29 +356,27 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: context.outlineColor,
                                       width: 1,
                                     ),
                                   ),
                                   child: DropdownButton(
                                     enableFeedback: true,
                                     value: provider.selectedOperationType,
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded,
                                     ),
-                                    style: context.getTitleSmallTextStyle(context.onSurfaceColor),
                                     alignment: Alignment.centerLeft,
                                     items: provider.chargeOperationType
                                         .map((value) {
                                       return DropdownMenuItem(
+                                        value: value,
                                         child: Text(
                                           value.title,
                                           textAlign: TextAlign.center,
                                         ),
-                                        value: value,
                                       );
                                     }).toList(),
-                                    underline: Opacity(opacity: 0),
+                                    underline: const Opacity(opacity: 0),
                                     onChanged: (InvoiceChargeOperationTypeModel?
                                         value) {
                                       provider
@@ -397,7 +387,7 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
                               ],
                             );
                           }
-                          return Opacity(opacity: 0);
+                          return const Opacity(opacity: 0);
                         }),
                       ),
                     ],
@@ -414,13 +404,12 @@ class _AddInvoiceChargeScreenState extends State<AddInvoiceChargeScreen> {
 
   Widget _buildSaveButton() {
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: TextButton(
         onPressed: () {
           validation();
         },
-        child: Text(S.current.save),
+        child: Text('save'),
       ),
     );
   }

@@ -1,22 +1,12 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
-
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/text_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/routes/app_routing.gr.dart';
-import 'package:mezink_app/screens/invoices/api/invoice_api.dart';
-import 'package:mezink_app/screens/invoices/model/invoice_charge_model.dart';
-import 'package:mezink_app/screens/invoices/ui/charges/add_invoice_charge_screen.dart';
-import 'package:mezink_app/screens/invoices/ui/charges/components/item_list.dart';
-import 'package:mezink_app/utils/common/utils.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../generated/l10n.dart';
-import '../../../../utils/common/snack_bar.dart';
+import '../../api/invoice_api.dart';
 import '../../api/invoice_charge_api.dart';
 import '../../model/invoice_charge_model.dart';
+import '../components/dialog.dart';
+import '../components/snack_bar.dart';
+import 'add_invoice_charge_screen.dart';
+import 'components/item_list.dart';
 
 class InvoiceChargesScreen extends StatefulWidget {
   final List<InvoiceChargeModel> selectedChargesFromAddInvoiceScreen;
@@ -57,16 +47,15 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
 
   addChargesToAddInvoiceScreen() {
     widget.onSaveSelectedCharges(provider.selectedCharges.toList());
-    context.router.pop();
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<InvoiceChargeProvider>(context);
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      appBar: MAppBar(
-        title: S.current.other_charges,
+      appBar: AppBar(
+        title: const Text('other charges'),
         actions: [_buildSaveButton()],
       ),
       body: ListView(
@@ -76,20 +65,19 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
           right: 20,
           bottom: MediaQuery.of(context).size.height * 0.1,
         ),
-        physics: customScrollPhysics(),
         children: [
           // === add charge button
           Container(
-            margin: EdgeInsets.only(
+            margin: const EdgeInsets.only(
               top: 10,
             ),
             child: InkWell(
               onTap: () {
-                AddInvoiceChargeScreen.launchScreen(context);
+                AddInvoiceChargeScreen.launchScreen(context: context, indexCharge: 0, isEditMode: false);
               },
               borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: EdgeInsets.only(
+                padding: const EdgeInsets.only(
                   left: 10,
                   right: 10,
                   top: 10,
@@ -103,14 +91,12 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
                       "assets/images/add_charges.png",
                       width: 20,
                       height: 20,
-                      color: context.primaryColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Text(
-                      S.current.add_new_charge,
-                      style: context.getTitleMediumTextStyle(context.primaryColor),
+                    const Text(
+                      'add new charge',
                     )
                   ],
                 ),
@@ -120,8 +106,8 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
           // === add charge button
 
           Container(
-            margin: EdgeInsets.only(top: 10, bottom: 20),
-            child: Divider(),
+            margin: const EdgeInsets.only(top: 10, bottom: 20),
+            child: const Divider(),
           ),
 
           Builder(builder: (context) {
@@ -129,17 +115,13 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    child: Text(
-                      S.current.previous_charges,
-                      style: context.getTitleMediumTextStyle(context.onSurfaceColor),
-                    ),
+                  const Text(
+                    'previous charges',
                   ),
                   ListView.builder(
                     itemCount: provider.selectedCharges.length,
                     shrinkWrap: true,
-                    physics: customScrollPhysics(),
-                    padding: EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 10),
                     itemBuilder: (ctx, index) {
                       return ItemListChargesInvoice(
                         model: provider.selectedCharges[index],
@@ -147,25 +129,13 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
                           provider.changeSelectedCharges(index: index);
                         },
                         onEdit: () {
-                          context.router
-                              .push(AddInvoiceChargeScreenRoute(
-                            isEditMode: true,
-                            indexCharge: index,
-                          ))
-                              .then((value) {
-                            Provider.of<InvoicesProvider>(
-                              context,
-                              listen: false,
-                            ).changeFullSelectedChargesFromInvoiceChargesScreen(
-                              newList: provider.selectedCharges.toList(),
-                            );
-                          });
+                          AddInvoiceChargeScreen.launchScreen(context: context, indexCharge: index, isEditMode: true);
                         },
                         onDelete: () {
                           if (provider.selectedCharges[index].isSelected) {
                             showSnackBar(
                               context: context,
-                              text: S.current.delete_selected_charge,
+                              text: 'delete selected charge',
                               snackBarType: SnackBarType.error,
                             );
                           } else {
@@ -173,12 +143,11 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
                               const Duration(seconds: 0),
                               () {
                                 showCustomAlertDialog(
-                                  title: S.current.delete,
-                                  subTitle: S.current
-                                      .are_you_sure_want_to_delete_charge,
+                                  title: 'delete',
+                                  subTitle: 'are you sure want to delete charge?',
                                   context: context,
-                                  leftButtonText: S.current.yes,
-                                  rightButtonText: S.current.cancel,
+                                  leftButtonText:'yes',
+                                  rightButtonText: 'cancel',
                                   onLeftButtonClicked: () {
                                     Navigator.of(context).pop();
                                     provider.deleteCharge(index);
@@ -191,7 +160,7 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
                                     );
                                     showSnackBar(
                                       context: context,
-                                      text: S.current.delete_charge_success,
+                                      text: 'Delete charge success',
                                       snackBarType: SnackBarType.success,
                                     );
                                   },
@@ -209,7 +178,7 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
                 ],
               );
             }
-            return Opacity(opacity: 0);
+            return const Opacity(opacity: 0);
           })
         ],
       ),
@@ -218,13 +187,12 @@ class _InvoiceChargesScreenState extends State<InvoiceChargesScreen> {
 
   Widget _buildSaveButton() {
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: TextButton(
         onPressed: () {
           addChargesToAddInvoiceScreen();
         },
-        child: Text(S.current.save),
+        child: const Text('save'),
       ),
     );
   }
