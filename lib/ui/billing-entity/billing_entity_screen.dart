@@ -1,27 +1,16 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'dart:async';
-
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/filled_button.dart';
-import 'package:mezink_app/material_components/buttons/text_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/material_components/text_field/form_text_field.dart';
-import 'package:mezink_app/routes/app_routing.gr.dart';
-import 'package:mezink_app/screens/invoices/api/billing_entity_api.dart';
-import 'package:mezink_app/screens/invoices/api/invoice_api.dart';
-import 'package:mezink_app/screens/invoices/model/billing_entity_model.dart';
-import 'package:mezink_app/screens/invoices/ui/billing-entity/add_billing_entity_screen.dart';
-import 'package:mezink_app/screens/invoices/ui/billing-entity/components/item_list.dart';
-import 'package:mezink_app/utils/common/snack_bar.dart';
-import 'package:mezink_app/utils/common/utils.dart';
+import 'package:invoice_management/ui/add_invoice_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:mezink_app/styles/progress_indicator.dart';
-
-import '../../../../components/error_screens.dart';
+import '../../api/billing_entity_api.dart';
+import '../../api/invoice_api.dart';
+import '../../model/billing_entity_model.dart';
+import '../components/dialog.dart';
+import '../components/error_screens.dart';
+import '../components/form_text_field.dart';
+import '../components/snack_bar.dart';
+import 'add_billing_entity_screen.dart';
+import 'components/item_list.dart';
 
 class BillingEntityScreen extends StatefulWidget {
   final int? selectedEntityID;
@@ -32,10 +21,8 @@ class BillingEntityScreen extends StatefulWidget {
 
   static const String id = "billingEntity";
 
-  static void launchScreen(BuildContext context, int selectedEntityID,
-      Function(BillingEntityProfiles) onSaved)  {
-     context.router.push<BillingEntityProfiles>(BillingEntityScreenRoute(
-        selectedEntityID: selectedEntityID, onSavedSelectedEntity: onSaved));
+  static void launchScreen(BuildContext context, int selectedEntityID, Function(BillingEntityProfiles) onSaved)  {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => BillingEntityScreen(onSavedSelectedEntity: onSaved,selectedEntityID: selectedEntityID,)));
   }
 
   @override
@@ -62,31 +49,13 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       reset();
       provider.getData().then((value) {
-        if (widget.selectedEntityID != 0) {
-          provider.state.selectedEntity = provider
-              .state.billingEntityModel.billingEntityData.profiles
-              .singleWhere((e) {
-            return e.id == widget.selectedEntityID;
-          });
-        } else {
-          provider.state.selectedEntity = provider
-              .state.billingEntityModel.billingEntityData.profiles.first;
-        }
+
       });
     });
 
     scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
-        provider.getMore().then((value) {
-          if (widget.selectedEntityID != 0) {
-            provider.state.selectedEntity = provider
-                .state.billingEntityModel.billingEntityData.profiles
-                .singleWhere((e) {
-              return e.id == widget.selectedEntityID;
-            });
-          }
-        });
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+
       }
     });
   }
@@ -96,15 +65,6 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
       provider.state.searchQuery = query;
       provider.state.currentPage = 1;
       provider.state.isAfterSearch = true;
-    });
-    provider.getData().then((value) {
-      if (widget.selectedEntityID != 0) {
-        provider.state.selectedEntity = provider
-            .state.billingEntityModel.billingEntityData.profiles
-            .singleWhere((e) {
-          return e.id == widget.selectedEntityID;
-        });
-      }
     });
   }
 
@@ -117,15 +77,6 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
       provider.state.isNetworkError = false;
       searchController.clear();
     });
-    provider.getData().then((value) {
-      if (widget.selectedEntityID != 0) {
-        provider.state.selectedEntity = provider
-            .state.billingEntityModel.billingEntityData.profiles
-            .singleWhere((e) {
-          return e.id == widget.selectedEntityID;
-        });
-      }
-    });
   }
 
   // after open add new entity screen,
@@ -136,14 +87,14 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
   addNewEntity() async {
     AddBillingEntityScreen.launchScreen(context, 0, false, (entity) {
       widget.onSavedSelectedEntity(entity);
-      context.router.popUntilRouteWithName(AddInvoiceScreenRoute.name);
+      AddInvoiceScreen.launchScreen(context);
     });
   }
 
   // send selected entity to add invoice screen
   saveSelectedEntity() {
     widget.onSavedSelectedEntity(provider.state.selectedEntity);
-    context.router.pop();
+    Navigator.pop(context);
   }
 
   reset() {
@@ -166,9 +117,8 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<BillingEntityProvider>(context);
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      appBar: MAppBar(
-        title: S.current.billing_entity,
+      appBar: AppBar(
+        title: const Text('Billing entity'),
         actions: [_buildSaveButton(provider.state)],
       ),
       body: _getWidgetBasedOnState(provider.state),
@@ -202,66 +152,59 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
     children.add(
       // === search field
       Builder(builder: (context) {
-        if (provider
-                .state.billingEntityModel.billingEntityData.profiles.isEmpty &&
+        if (provider.state.billingEntities.isEmpty &&
             provider.state.isAfterSearch == false) {
           return Container();
         }
-        return Container(
-          child: MTextFormField(
-            controller: searchController,
-            textInputAction: TextInputAction.done,
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 1,
-            onChanged: onSearchChanged,
-            labelText: S.current.search_billing_entity,
-            prefixIcon: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  child: Image.asset(
-                    "assets/images/search.png",
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
-              ],
-            ),
+        return MTextFormField(
+          controller: searchController,
+          textInputAction: TextInputAction.done,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 1,
+          onChanged: onSearchChanged,
+          labelText: 'Search billing entity',
+          prefixIcon: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                "assets/images/search.png",
+                width: 24,
+                height: 24,
+              ),
+            ],
           ),
         );
       }),
       // === search field
     );
 
-    children.add(SizedBox(
-      height: 20,
+    children.add(const SizedBox(
+      height: 20.0,
     ));
 
     children.add(
       // create new entity button
       Builder(builder: (context) {
-        if (provider
-                .state.billingEntityModel.billingEntityData.profiles.isEmpty &&
+        if (provider.state.billingEntities.isEmpty &&
             provider.state.isAfterSearch == false) {
           return Container();
         }
 
         return UnconstrainedBox(
-          child: MFilledButton(
+          child: ElevatedButton(
             onPressed: () {
               addNewEntity();
             },
-            child: Row(
+            child: const Row(
               children: [
                 Icon(
                   Icons.add,
-                  color: context.onPrimaryColor,
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 4,
                 ),
                 Text(
-                  S.current.add_new_entity,
+                  'Add new entity',
                 ),
               ],
             ),
@@ -272,20 +215,18 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
     );
     
 
-    children.add(SizedBox(height: 20));
+    children.add(const SizedBox(height: 20));
     children.add(
       Builder(builder: (context) {
         if (state.loading) {
           return Container(
             margin:
                 EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.2),
-            child: Center(
-              child: AdaptiveProgressIndicator(),
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
           );
-        } else if (provider
-                .state.billingEntityModel.billingEntityData.profiles.isEmpty &&
-            !provider.state.isAfterSearch) {
+        } else if (provider.state.billingEntities.isEmpty && !provider.state.isAfterSearch) {
           return Container(
             margin: EdgeInsets.only(
               top: MediaQuery.of(context).size.height * 0.3,
@@ -296,14 +237,13 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                   onRefresh: () {
                     addNewEntity();
                   },
-                  text: S.current.no_billing_entity_added,
-                  refreshButtonText: S.current.add_new_entity,
+                  text: 'No billing entity added',
+                  refreshButtonText: 'Add new entity',
                 ),
               ],
             ),
           );
-        } else if (provider
-                .state.billingEntityModel.billingEntityData.profiles.isEmpty &&
+        } else if (provider.state.billingEntities.isEmpty &&
             provider.state.isAfterSearch) {
           return Container(
             margin: EdgeInsets.only(
@@ -313,19 +253,16 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
               onRefresh: () {
                 refreshData();
               },
-              text: S.current.no_results_found,
+              text: 'No results found',
             ),
           );
         }
         return ListView.builder(
-          itemCount: provider
-              .state.billingEntityModel.billingEntityData.profiles.length,
+          itemCount: provider.state.billingEntities.length,
           shrinkWrap: true,
-          physics: customScrollPhysics(),
           padding: EdgeInsets.zero,
           itemBuilder: (ctx, index) {
-            var profile = provider
-                .state.billingEntityModel.billingEntityData.profiles[index];
+            var profile = provider.state.billingEntities[index];
             return ItemListBillingEntity(
               model: profile,
               groupValue: provider.state.selectedEntity,
@@ -333,9 +270,8 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                 provider.changeSelectedEntity(profile);
               },
               onEdit: () {
-                AddBillingEntityScreen.launchScreen(context, profile.id, true,
-                    (entity) {
-                  context.router.pop();
+                AddBillingEntityScreen.launchScreen(context, profile.id, true, (entity) {
+                  Navigator.pop(context);
                   widget.onSavedSelectedEntity(entity);
                   refreshData();
                 });
@@ -344,20 +280,18 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                 // handle selected entity to delete
                 if (provider.state.selectedEntity.id != profile.id) {
                   Future.delayed(
-                    const Duration(seconds: 0),
-                    () {
+                    const Duration(seconds: 0), () {
                       showCustomAlertDialog(
-                        title: "${S.current.delete} ${profile.name}",
-                        subTitle: S
-                            .current.are_you_sure_want_to_delete_billing_entity,
+                        title: "delete ${profile.name}",
+                        subTitle: "Are you sure want to delete billing entity",
                         context: context,
-                        leftButtonText: S.current.yes,
-                        rightButtonText: S.current.cancel,
+                        leftButtonText: 'yes',
+                        rightButtonText: 'Cancel',
                         onLeftButtonClicked: () {
                           Navigator.of(context).pop();
                           showSnackBar(
                             context: context,
-                            text: S.current.please_wait,
+                            text: 'please wait',
                           );
                           provider
                               .deleteEntity(entityId: profile.id)
@@ -365,14 +299,14 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                             if (value) {
                               showSnackBar(
                                 context: context,
-                                text: S.current.delete_entity_success,
+                                text: 'Delete entity success',
                                 snackBarType: SnackBarType.success,
                               );
                               // when delete same profile as in selected profile in add invoice
                               // also delete the selected profile in add invoice
                               if(Provider.of<InvoicesProvider>(context, listen: false).state.selectedBillingEntity.id == profile.id) {
-                                if(provider.state.billingEntityModel.billingEntityData.profiles.isNotEmpty) {
-                                  var profile = provider.state.billingEntityModel.billingEntityData.profiles.single;
+                                if(provider.state.billingEntities.isNotEmpty) {
+                                  var profile = provider.state.billingEntities.single;
                                   provider.changeSelectedEntity(profile);
                                   Provider.of<InvoicesProvider>(context, listen: false).changeSelectedEntity(profile);
                                 }
@@ -380,7 +314,7 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                             } else {
                               showSnackBar(
                                 context: context,
-                                text: S.current.delete_entity_error,
+                                text: 'Delete entity error',
                                 snackBarType: SnackBarType.success,
                               );
                             }
@@ -395,7 +329,7 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                 } else {
                   showSnackBar(
                     context: context,
-                    text: S.current.delete_selected_entity,
+                    text: 'Delete selected entity',
                     snackBarType: SnackBarType.error,
                   );
                 }
@@ -415,30 +349,28 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
           right: 20,
           bottom: MediaQuery.of(context).size.height * 0.1,
         ),
-        children: children,
         controller: scrollController,
-        physics: customScrollPhysics(alwaysScroll: true),
+        children: children,
       ),
     );
   }
 
   Widget _buildSaveButton(BillingEntityState state) {
     if (state.isNetworkError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.isError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: ElevatedButton(
         onPressed: () {
           saveSelectedEntity();
         },
-        child: Text(S.current.save),
+        child: const Text('save'),
       ),
     );
   }

@@ -1,27 +1,14 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sort_child_properties_last
-
 import 'dart:io';
-
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mezink_app/commands/email_validator.dart';
-import 'package:mezink_app/commands/image_editor.dart';
-import 'package:mezink_app/components/error_screens.dart';
-import 'package:mezink_app/generated/l10n.dart';
-import 'package:mezink_app/material_components/appbar/app_bar.dart';
-import 'package:mezink_app/material_components/buttons/text_button.dart';
-import 'package:mezink_app/material_components/extensions/context_extensions.dart';
-import 'package:mezink_app/material_components/text_field/form_text_field.dart';
-import 'package:mezink_app/screens/invoices/api/billing_entity_api.dart';
-import 'package:mezink_app/screens/invoices/model/billing_entity_model.dart';
-import 'package:mezink_app/styles/color.dart';
-import 'package:mezink_app/utils/common/snack_bar.dart';
-import 'package:mezink_app/utils/common/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:mezink_app/styles/progress_indicator.dart';
 
-import '../../../../routes/app_routing.gr.dart';
+import '../../api/billing_entity_api.dart';
+import '../../model/billing_entity_model.dart';
+import '../client/components/email_validator.dart';
+import '../components/error_screens.dart';
+import '../components/form_text_field.dart';
+import '../components/image_editor.dart';
+import '../components/snack_bar.dart';
 
 class AddBillingEntityScreen extends StatefulWidget {
   final int billingEntityId;
@@ -35,13 +22,11 @@ class AddBillingEntityScreen extends StatefulWidget {
   }) : super(key: key);
 
   static const String id = "addBillingEntity";
-  static void launchScreen(BuildContext context, int billingEntityId,
-      bool isEditMode, Function(BillingEntityProfiles) onSaved)  {
-     context.router.push<BillingEntityProfiles>(
-        AddBillingEntityScreenRoute(
-            onSavedNewEntity: onSaved,
-            billingEntityId: billingEntityId,
-            isEditMode: isEditMode));
+  static void launchScreen(BuildContext context, int billingEntityId, bool isEditMode, Function(BillingEntityProfiles) onSaved)  {
+     Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddBillingEntityScreen( onSavedNewEntity: onSaved,
+         billingEntityId: billingEntityId,
+         isEditMode: isEditMode)));
+
   }
 
   @override
@@ -60,7 +45,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
       if (provider.state.isLogoEmpty) {
         showSnackBar(
           context: context,
-          text: S.current.billing_entity_logo_empty,
+          text: 'Billing entity logo empty',
           snackBarType: SnackBarType.error,
         );
       } else {
@@ -70,28 +55,12 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
   }
 
   saveData() {
-    provider
-        .saveData(
+    provider.saveData(
       id: widget.billingEntityId,
       name: entityNameController.text.toString(),
       email: entityEmailController.text.toString(),
-    )
-        .then((value) {
-      if (value.success) {
-        widget.onSavedNewEntity(BillingEntityProfiles(
-          id: value.data, // entity id from api return
-          name: entityNameController.text.toString(),
-          email: entityEmailController.text.toString(),
-          logoURL: provider.state.selectedLogo,
-        ));
-        reset();
-      } else {
-        showSnackBar(
-          context: context,
-          text: value.error,
-          snackBarType: SnackBarType.error,
-        );
-      }
+    ).then((value) {
+
     });
   }
 
@@ -107,19 +76,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
       provider.state.isNetworkError = false;
     });
     if (widget.isEditMode) {
-      provider.getDetailBillingEntity(widget.billingEntityId).then((value) {
-        if (value) {
-          // return true
-          entityEmailController.text =
-              provider.state.selectedDetailEntity.email;
-          entityNameController.text = provider.state.selectedDetailEntity.name;
-          provider.state.selectedLogo =
-              provider.state.selectedDetailEntity.logoURL;
-          if (provider.state.selectedDetailEntity.logoURL != "") {
-            provider.state.isLogoEmpty = false;
-          }
-        }
-      });
+
     }
   }
 
@@ -148,11 +105,10 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<BillingEntityProvider>(context);
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      appBar: MAppBar(
-        title: widget.isEditMode
-            ? S.current.edit_entity
-            : S.current.add_new_entity,
+      appBar: AppBar(
+        title: Text(widget.isEditMode
+            ? 'Edit entity'
+            : 'Add new entity'),
         actions: [_buildSaveButton(provider.state)],
       ),
       body: _getWidgetBasedOnState(provider.state),
@@ -161,25 +117,24 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
 
   Widget _buildSaveButton(BillingEntityState state) {
     if (state.isNetworkError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.isError) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     if (state.loading) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     return Padding(
-      padding: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-      child: MTextButton(
-        isAppBarAction: true,
+      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      child: ElevatedButton(
         onPressed: () {
           validation();
         },
-        child: Text(S.current.save),
+        child: const Text('save'),
       ),
     );
   }
@@ -187,7 +142,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
   Widget _getWidgetBasedOnState(BillingEntityState state) {
     if (state.loading) {
       return const Center(
-        child: AdaptiveProgressIndicator(),
+        child: CircularProgressIndicator(),
       );
     }
     if (state.isNetworkError) {
@@ -217,7 +172,6 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
             right: 20,
             bottom: MediaQuery.of(context).size.height * 0.1,
           ),
-          physics: customScrollPhysics(),
           shrinkWrap: true,
           children: [
             // === select logo
@@ -225,14 +179,13 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.only(left: 5),
-                  child: Text(
-                    S.current.entity_information,
-                    style: context.getTitleMediumTextStyle(context.onSurfaceColor),
+                  margin: const EdgeInsets.only(left: 5),
+                  child: const Text(
+                    'Entity information',
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(
+                  margin: const EdgeInsets.only(
                     top: 20,
                     left: 5,
                   ),
@@ -249,7 +202,6 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 width: 0.5,
-                                color: MColors.lightGrey,
                               ),
                             ),
                             child: Stack(
@@ -261,21 +213,13 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                                   },
                                   child: CircleAvatar(
                                     backgroundColor: Colors.transparent,
+                                    radius: 20,
                                     child: Builder(builder: (ctx) {
                                       if (provider.state.isLogoEmpty) {
-                                        return SvgPicture.asset(
-                                          "assets/images/empty_thumbnail.svg",
+                                        return Image.asset(
+                                          "assets/images/empty_thumbnail.png",
                                           width: 22,
                                           height: 22,
-                                          placeholderBuilder:
-                                              (BuildContext context) {
-                                            return Container(
-                                              padding:
-                                                  const EdgeInsets.all(30.0),
-                                              child:
-                                                  const AdaptiveProgressIndicator(),
-                                            );
-                                          },
                                         );
                                       }
                                       return Image.network(
@@ -284,7 +228,6 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                                         height: 35,
                                       );
                                     }),
-                                    radius: 20,
                                   ),
                                 ),
                                 Builder(
@@ -295,20 +238,20 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                                           provider.removeSelectedLogo();
                                         },
                                         child: Container(
-                                          margin: EdgeInsets.only(
+                                          margin: const EdgeInsets.only(
                                             top: 2,
                                             right: 2,
                                           ),
                                           alignment: Alignment.topRight,
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.close,
-                                            color: MColors.red,
+                                            color: Colors.red,
                                             size: 16,
                                           ),
                                         ),
                                       );
                                     }
-                                    return Opacity(opacity: 0);
+                                    return const Opacity(opacity: 0);
                                   },
                                 ),
                               ],
@@ -318,12 +261,12 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                       ),
                       Container(
                         alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.only(left: 15),
-                        child: MTextButton(
+                        margin: const EdgeInsets.only(left: 15),
+                        child: TextButton(
                           onPressed: (){
                             selectImageUpload();
                           },
-                          child: Text(S.current.upload_logo),
+                          child: const Text('upload logo'),
                         ),
                       ),
                     ],
@@ -335,7 +278,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
 
             // === entity name
             Container(
-              margin: EdgeInsets.only(top: 30),
+              margin: const EdgeInsets.only(top: 30),
               child: MTextFormField(
                 controller: entityNameController,
                 textInputAction: TextInputAction.next,
@@ -343,18 +286,18 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                 maxLines: 1,
                 validator: (str) {
                   if (str.toString().isEmpty) {
-                    return S.current.billing_entity_name_empty;
+                    return 'billing entity name empty';
                   }
                   return null;
                 },
-                labelText: S.current.entity_name,
+                labelText: 'entity name',
               ),
             ),
             // === entity name
 
             // === entity email
             Container(
-              margin: EdgeInsets.only(top: 20),
+              margin: const EdgeInsets.only(top: 20),
               child: MTextFormField(
                 controller: entityEmailController,
                 textInputAction: TextInputAction.done,
@@ -362,13 +305,13 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                 maxLines: 1,
                 validator: (str) {
                   if (str.toString().isEmpty) {
-                    return S.current.billing_entity_email_empty;
+                    return 'billing entity email empty';
                   } else if (!EmailValidator.validate(str.toString())) {
-                    return S.current.enter_valid_email;
+                    return 'enter valid email';
                   }
                   return null;
                 },
-                labelText: S.current.entity_email,
+                labelText: 'entity email',
               ),
             ),
             // === entity email
@@ -383,7 +326,6 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: children,
-        physics: customScrollPhysics(alwaysScroll: true),
       ),
     );
   }
@@ -405,28 +347,27 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                   if (result is File) {
                     showSnackBar(
                         context: context,
-                        text: S.current.uploading,
+                        text: 'uploading',
                         snackBarType: SnackBarType.general);
                     provider
                         .changeSelectedLogoAfterUploadLogo(result)
                         .whenComplete(() {
                       showSnackBar(
                           context: context,
-                          text: S.current.success_upload,
+                          text: 'Success upload',
                           snackBarType: SnackBarType.success);
                     });
                   }
                 });
               },
               leading: const CircleAvatar(
-                backgroundColor: MColors.transparent,
+                backgroundColor: Colors.transparent,
                 child: Icon(
                   Icons.camera_alt_rounded,
-                  color: MColors.secondaryGrey,
                 ),
               ),
-              title: Text(
-                S.current.camera,
+              title: const Text(
+                'camera',
               ),
             ),
             ListTile(
@@ -439,28 +380,27 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                   if (result is File) {
                     showSnackBar(
                         context: context,
-                        text: S.current.uploading,
+                        text: 'uploading',
                         snackBarType: SnackBarType.general);
                     provider
                         .changeSelectedLogoAfterUploadLogo(result)
                         .whenComplete(() {
                       showSnackBar(
                           context: context,
-                          text: S.current.success_upload,
+                          text: 'success upload',
                           snackBarType: SnackBarType.success);
                     });
                   }
                 });
               },
               leading: const CircleAvatar(
-                backgroundColor: MColors.transparent,
+                backgroundColor: Colors.transparent,
                 child: Icon(
                   Icons.image,
-                  color: MColors.secondaryGrey,
                 ),
               ),
-              title: Text(
-                S.current.gallery,
+              title: const Text(
+                'gallery',
               ),
             ),
           ],

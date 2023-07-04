@@ -82,7 +82,6 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<InvoicesProvider>(context);
     return Scaffold(
-      backgroundColor: Colors.purple,
       appBar: AppBar(title: const Text('invoice')),
       body: _getWidgetBasedOnState(provider.state),
     );
