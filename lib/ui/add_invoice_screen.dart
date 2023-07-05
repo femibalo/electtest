@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:invoice_management/ui/items/add_invoice_item_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../api/invoice_api.dart';
@@ -7,6 +8,7 @@ import '../model/bill_product_item_model.dart';
 import '../model/billing_entity_model.dart';
 import '../model/client_invoice_model.dart';
 import '../model/invoice_charge_model.dart';
+import '../utils/utils.dart';
 import 'billing-entity/billing_entity_screen.dart';
 import 'charges/invoice_charges_screen.dart';
 import 'client/client_screen.dart';
@@ -110,14 +112,15 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
         context: context,
         selectedItemsInAddInvoiceScreen:
             provider.state.billProductItem.toList(),
-        onSaveSelectedItems: (List<UserBillProductItem> items) {});
+        onSaveSelectedItems: (List<UserBillProductItem> items) {
+
+        });
   }
 
   changeCharges() {
     InvoiceChargesScreen.launchScreen(
         context: context,
-        selectedChargesFromAddInvoiceScreen:
-            provider.state.selectedCharges.toList(),
+        selectedChargesFromAddInvoiceScreen: provider.state.selectedCharges.toList(),
         onSaveSelectedCharges: (List<InvoiceChargeModel> charges) {
           if (charges.isNotEmpty) {
             provider.setSelectedChargesFromItemScreen(
@@ -194,9 +197,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
     final provider = Provider.of<InvoicesProvider>(context);
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.isEditMode
-              ? 'edit invoice'
-              : 'new invoice'),
+          title: Text(
+            widget.isEditMode ? 'edit invoice' : 'new invoice',
+          ),
           actions: [_buildSaveButton(provider.state)]),
       body: _getWidgetBasedOnState(provider.state),
     );
@@ -242,15 +245,22 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
         onPressed: () {
           validation();
         },
-        child: const Text('save'),
+        child: Text('Save',
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(color: Colors.white)),
       ),
     );
   }
 
   Widget _successContent(InvoicesProviderState state) {
     List<Widget> children = [];
+    invoiceDateController.text = getDateddMMMyyyy(state.invoiceDate);
+    dueDateController.text = getDateddMMMyyyy(state.dueDate);
     children.add(
       ListView(
+        physics: customScrollPhysics(),
         shrinkWrap: true,
         padding: EdgeInsets.only(
           right: 20.0,
@@ -271,10 +281,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Expanded(
-                          child: Text(
-                            'billing entity'
-                          ),
+                        Expanded(
+                          child: Text('billing entity',
+                              style: Theme.of(context).textTheme.titleLarge),
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.21,
@@ -282,7 +291,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                             onPressed: () {
                               changeEntity();
                             },
-                            child: const Text('edit'),
+                            child: Text('Edit',
+                                style: Theme.of(context).textTheme.titleLarge),
                           ),
                         ),
                       ],
@@ -297,16 +307,16 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                           changeEntity();
                         },
                         contentPadding: EdgeInsets.zero,
-                        leading: CircleAvatar(
+                        leading: const CircleAvatar(
                           backgroundColor: Colors.transparent,
                           backgroundImage: NetworkImage(
-                            provider.state.selectedBillingEntity.logoURL
-                                .toString(),
-                          ),
+                              // provider.state.selectedBillingEntity.logoURL.toString(),
+                              'https://img.freepik.com/premium-vector/abstract-bird-logo-design_99536-200.jpg'),
                         ),
                         title: Text(
-                          provider.state.selectedBillingEntity.name.toString(),
-                        ),
+                            // provider.state.selectedBillingEntity.name.toString(),
+                            'selectedBillingEntity',
+                            style: Theme.of(context).textTheme.titleLarge),
                       ),
                     ),
                   ],
@@ -324,9 +334,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                     left: 5,
                     top: 20,
                   ),
-                  child: const Text(
-                    'invoice details',
-                  ),
+                  child: Text('Invoice details',
+                      style: Theme.of(context).textTheme.titleLarge),
                 ),
                 Container(
                   margin: const EdgeInsets.only(
@@ -357,10 +366,10 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                         margin: const EdgeInsets.only(left: 5),
                         child: Row(
                           children: [
-                            const Expanded(
-                              child: Text(
-                                'date',
-                              ),
+                            Expanded(
+                              child: Text('date',
+                                  style:
+                                      Theme.of(context).textTheme.titleLarge),
                             ),
                             const SizedBox(
                               width: 10,
@@ -373,9 +382,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                   provider.changeDueDateStatus(val);
                                 },
                                 value: provider.state.isDueDateActive,
-                                title: const Text(
-                                  'due date',
-                                ),
+                                title: Text('due date',
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge),
                               ),
                             ),
                           ],
@@ -397,7 +406,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                         isInvoiceDate: true,
                                       );
                                     },
-                                    labelText: 'invoice_date',
+                                    labelText: 'Invoice date',
                                     readOnly: true,
                                     suffixIcon: const Column(
                                       mainAxisAlignment:
@@ -420,6 +429,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                     controller: dueDateController,
                                     readOnly: true,
                                     maxLines: 1,
+                                    hintText: state.invoiceDate.toString(),
                                     enabled: provider.state.isDueDateActive,
                                     onTap: provider.state.isDueDateActive
                                         ? () {
@@ -428,7 +438,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                             );
                                           }
                                         : null,
-                                    labelText: 'due date',
+                                    labelText: 'Due date',
                                     suffixIcon: const Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -465,10 +475,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Expanded(
-                            child: Text(
-                              'client details',
-                            ),
+                          Expanded(
+                            child: Text('client details',
+                                style: Theme.of(context).textTheme.titleLarge),
                           ),
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.21,
@@ -478,13 +487,19 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                     onPressed: () {
                                       changeClient();
                                     },
-                                    child: const Text('edit'));
+                                    child: Text('edit',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge));
                               }
                               return ElevatedButton(
                                   onPressed: () {
                                     changeClient();
                                   },
-                                  child: const Text('add'));
+                                  child: Text('add',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge));
                             }),
                           ),
                         ],
@@ -536,10 +551,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Expanded(
-                        child: Text(
-                          'item details',
-                        ),
+                      Expanded(
+                        child: Text('item details',
+                            style: Theme.of(context).textTheme.titleLarge),
                       ),
                       SizedBox(
                           width: MediaQuery.of(context).size.width * 0.21,
@@ -549,13 +563,19 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                   onPressed: () {
                                     changeItems();
                                   },
-                                  child: const Text('add'));
+                                  child: Text('add',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge));
                             }
                             return ElevatedButton(
                                 onPressed: () {
                                   changeItems();
                                 },
-                                child: const Text('edit'));
+                                child: Text('edit',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge));
                           })),
                     ],
                   ),
@@ -593,9 +613,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                   .termsAndConditions.isNotEmpty
                           ? true
                           : false,
-                      title: const Text(
-                        'additional details',
-                      ),
+                      title: Text('additional details',
+                          style: Theme.of(context).textTheme.titleLarge),
                       children: [
                         // === note
                         SwitchListTile(
@@ -761,10 +780,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                       onTap: () {
                         changeCharges();
                       },
-                      child: const Text(
-                        "+ other tax and discount",
-                        textAlign: TextAlign.right,
-                      ),
+                      child: Text("+ other tax and discount",
+                          textAlign: TextAlign.right,
+                          style: Theme.of(context).textTheme.titleLarge),
                     ),
                   ),
                 ],
@@ -792,6 +810,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
         loadInvoiceForm();
       },
       child: ListView(
+        physics: customScrollPhysics(alwaysScroll: true),
         padding: EdgeInsets.zero,
         children: children,
       ),
@@ -823,17 +842,14 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                       newDate: arg.value,
                     );
                     if (isInvoiceDate) {
-
-                    } else {
-
-                    }
+                    } else {}
                     Navigator.of(context).pop();
                   },
                   onSubmit: (arg) {},
                   todayHighlightColor: Colors.blue,
                   selectionColor: Colors.blue,
                   rangeSelectionColor: Colors.blue.withOpacity(0.1),
-                  startRangeSelectionColor:Colors.blue,
+                  startRangeSelectionColor: Colors.blue,
                   endRangeSelectionColor: Colors.blue,
                   maxDate: DateTime.now().add(const Duration(days: 30)),
                   initialDisplayDate: DateTime.now(),

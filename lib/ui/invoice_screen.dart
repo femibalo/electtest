@@ -132,6 +132,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                 "assets/images/search.png",
                 width: 24,
                 height: 24,
+                color: Colors.blue,
               ),
             ],
           ),
@@ -156,17 +157,18 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
             onPressed: () {
               AddInvoiceScreen.launchScreen(context);
             },
-            child: const Row(
+            child:  Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.add,
                   color: Colors.purple,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 4,
                 ),
                 Text(
-                  'add new invoice',
+                  'Add new invoice',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),

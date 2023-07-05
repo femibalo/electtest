@@ -88,6 +88,7 @@ class MTextFormField extends StatelessWidget {
       keyboardType: keyboardType,
       cursorColor: Colors.blue,
       cursorWidth: 1,
+      style: Theme.of(context).textTheme.titleMedium,
       autofillHints: autofillHints,
       onEditingComplete: onEditingComplete,
       validator: validator,
@@ -138,6 +139,7 @@ class MTextFormField extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide( width: 2, style: BorderStyle.solid),
         ),
+        labelStyle: Theme.of(context).textTheme.titleLarge,
         errorMaxLines: errorMaxLines,
       ),
     );

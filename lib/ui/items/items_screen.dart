@@ -25,7 +25,7 @@ class InvoiceItemsScreen extends StatefulWidget {
   static void launchScreen({required BuildContext context, 
   required List<UserBillProductItem> selectedItemsInAddInvoiceScreen, 
   required Function(List<UserBillProductItem>) onSaveSelectedItems}) {
-
+    Navigator.push(context, MaterialPageRoute(builder: (_) => InvoiceItemsScreen(selectedItemsInAddInvoiceScreen: selectedItemsInAddInvoiceScreen, onSaveSelectedItems: onSaveSelectedItems,)));
   }
 
   @override

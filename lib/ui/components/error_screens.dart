@@ -77,8 +77,7 @@ class _NoContentWidget extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 96,
-            color: Colors.white,
+            size: 96
           ),
           const SizedBox(height: 10),
           Padding(
@@ -86,15 +85,16 @@ class _NoContentWidget extends StatelessWidget {
             child: Text(
               text,
               textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge
             ),
           ),
           if(allowRefresh)...[
             const SizedBox(height: 8),
-            TextButton(
+            OutlinedButton(
                 onPressed: () {
                   onRefresh();
                 },
-                child: Text(refreshButtonText ?? 'refresh'))
+                child: Text(refreshButtonText ?? 'refresh', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.blue),))
           ]
         ],
       ),

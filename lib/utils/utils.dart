@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 
@@ -15,4 +18,20 @@ String getDateddMMMyyyy(DateTime dateTime) {
 
 String getTimeAmPm(DateTime dateTime) {
   return DateFormat('hh:mm a', 'en').format(dateTime).toString();
+}
+
+ScrollPhysics customScrollPhysics({
+  bool alwaysScroll = false,
+  bool neverScroll = false,
+}) {
+  ScrollPhysics scrollPhysics = (Platform.isAndroid)
+      ? const ClampingScrollPhysics()
+      : const BouncingScrollPhysics();
+  if (alwaysScroll) {
+    return AlwaysScrollableScrollPhysics(parent: scrollPhysics);
+  }
+  if (neverScroll) {
+    return const NeverScrollableScrollPhysics();
+  }
+  return scrollPhysics;
 }
