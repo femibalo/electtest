@@ -29,29 +29,36 @@ class InvoiceItemProvider extends ChangeNotifier {
   Future<bool> saveData({
     required String name,
     required String description,
-    // required int price,
-    // required int qty,
-    // required int currencyID,
-    // required num taxPercent,
-    // required num gstPercent,
-    // required num discountPercent,
+    required String equipmentId,
+    required String location,
+    required String serialNo,
+    required num voltage,
+    required num rating,
+    required num fuse,
+    required String inspectionFrequency,
+    required bool continuityTestGreyedOut, // Logic for Continuity Test
+   
   }) async {
     try {
       UserBillProductItem userBillProductItem = UserBillProductItem(
-          id: DateTime.now().millisecondsSinceEpoch,
-          name: name,
-          description: description,
-          // price: price,
-          // qty: qty,
-          // currencyID: currencyID,
-          // taxPercent: taxPercent,
-          // gstPercent: gstPercent,
-          // discountPercent: discountPercent
-          );
+        id: DateTime.now().millisecondsSinceEpoch,
+        name: name,
+        description: description,
+        // New fields
+        equipmentId: equipmentId,
+        location: location,
+        serialNo: serialNo,
+        voltage: voltage,
+        rating: rating,
+        fuse: fuse,
+        inspectionFrequency: inspectionFrequency,
+        continuityTestGreyedOut: continuityTestGreyedOut,
+     
+      );
       await box.add(userBillProductItem);
       state.selectedItems.add(userBillProductItem);
       getData();
-      calculate();
+      // calculate();
       return true;
     } catch (e) {
       return false;
@@ -124,13 +131,14 @@ class InvoiceItemProvider extends ChangeNotifier {
     return false;
   }
 
-  setSelectedItemsFromAddInvoiceScreen(List<UserBillProductItem> itemsFromAddInvoiceScreen) {
+  setSelectedItemsFromAddInvoiceScreen(
+      List<UserBillProductItem> itemsFromAddInvoiceScreen) {
     state.selectedItems.clear();
     for (var item in itemsFromAddInvoiceScreen) {
       state.selectedItems.add(UserBillProductItem.fromJson(item.toJson()));
-      if(!state.billProductItems.any((element) => element.id == item.id)){
-         box.add(item);
-         getData();
+      if (!state.billProductItems.any((element) => element.id == item.id)) {
+        box.add(item);
+        getData();
       }
     }
     notifyListeners();
@@ -138,34 +146,47 @@ class InvoiceItemProvider extends ChangeNotifier {
   }
 
   setItemToSelectedItems(UserBillProductItem item) {
-    if(state.selectedItems.any((element) => element.id == item.id)){
+    if (state.selectedItems.any((element) => element.id == item.id)) {
       state.selectedItems.removeWhere((element) => element.id == item.id);
-    }else{
+    } else {
       state.selectedItems.add(item);
     }
     notifyListeners();
     calculate();
   }
 
-  bool isItemSelected(UserBillProductItem item){
+  bool isItemSelected(UserBillProductItem item) {
     return state.selectedItems.any((element) => element.id == item.id);
   }
 
   increaseItemQty(int itemId) {
     if (state.billProductItems.any((element) => element.id == itemId)) {
-      state.billProductItems.singleWhere((element) => element.id == itemId).qty++;
+      state.billProductItems
+          .singleWhere((element) => element.id == itemId)
+          .qty++;
     } else {
-      state.billProductItems.add(state.billProductItems.singleWhere((element) => element.id == itemId));
-      state.billProductItems.singleWhere((element) => element.id == itemId).qty++;
+      state.billProductItems.add(state.billProductItems
+          .singleWhere((element) => element.id == itemId));
+      state.billProductItems
+          .singleWhere((element) => element.id == itemId)
+          .qty++;
     }
     calculate();
   }
 
   decreaseItemQty(int itemId) {
     if (state.billProductItems.any((element) => element.id == itemId) &&
-        state.billProductItems.singleWhere((element) => element.id == itemId).qty > 0) {
-        state.billProductItems.singleWhere((element) => element.id == itemId).qty--;
-      if (state.billProductItems.singleWhere((element) => element.id == itemId).qty == 0) {
+        state.billProductItems
+                .singleWhere((element) => element.id == itemId)
+                .qty >
+            0) {
+      state.billProductItems
+          .singleWhere((element) => element.id == itemId)
+          .qty--;
+      if (state.billProductItems
+              .singleWhere((element) => element.id == itemId)
+              .qty ==
+          0) {
         box.deleteAt(getIndexOfEntity(itemId));
         getData();
       }
@@ -219,6 +240,15 @@ class InvoiceItemState {
   List<UserBillProductItem> billProductItems;
   CurrencyModel selectedCurrency;
   List<CurrencyModel> currencies;
+    // New fields
+  String equipmentId;
+  String location;
+  String serialNo;
+  num voltage;
+  num rating;
+  num fuse;
+  String inspectionFrequency;
+  bool continuityTestGreyedOut;
 
   InvoiceItemState({
     this.isError = false,
@@ -238,5 +268,14 @@ class InvoiceItemState {
     required this.billProductItems,
     required this.selectedCurrency,
     required this.currencies,
+     // Initialize new fields
+    this.equipmentId = "",
+    this.location = "",
+    this.serialNo = "",
+    this.voltage = 0,
+    this.rating = 0,
+    this.fuse = 0,
+    this.inspectionFrequency = "",
+    this.continuityTestGreyedOut = false,
   });
 }

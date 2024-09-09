@@ -100,6 +100,15 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
         .saveData(
       name: nameController.text.toString(),
       description: descriptionController.text.toString(),
+      equipmentId: equipmentIdController.text.toString(),
+      location: locationController.text.toString(),
+      serialNo: serialNoController.text.toString(),
+      voltage: int.parse(voltageController.text.toString()),
+      rating: int.parse(ratingController.text.toString()),
+      fuse: int.parse(fuseController.text.toString()),
+      inspectionFrequency: inspectionFrequencyController.text.toString(), //
+      continuityTestGreyedOut:
+          greyOutContinuityTest, // Logic for Continuity Test
       // price: int.parse(priceController.text.toString()),
       // qty: 1,
       // currencyID: 0,

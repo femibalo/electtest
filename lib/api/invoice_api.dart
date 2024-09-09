@@ -12,6 +12,7 @@ const String invoice = 'invoice';
 
 class InvoicesProvider extends ChangeNotifier {
   final box = Hive.box<Invoices>(invoice);
+  
 
   InvoicesProviderState state = InvoicesProviderState(
     billProductItem: [],
@@ -52,7 +53,9 @@ class InvoicesProvider extends ChangeNotifier {
         totalDiscountPrice: totalDiscount,
         invoiceID: invoiceName,
         description: description,
-        custom: state.selectedCharges.where((element) => element.isSelected == true).toList(),
+        custom: state.selectedCharges
+            .where((element) => element.isSelected == true)
+            .toList(),
       );
       await box.add(invoices);
       getData();
@@ -135,7 +138,9 @@ class InvoicesProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> update({required int id, required String invoiceName,
+  Future<bool> update(
+      {required int id,
+      required String invoiceName,
       required String description,
       required String termsAndConditions,
       required String currencyCode,
@@ -167,9 +172,11 @@ class InvoicesProvider extends ChangeNotifier {
         totalDiscountPrice: totalDiscount,
         invoiceID: invoiceName,
         description: description,
-        custom: state.selectedCharges.where((element) => element.isSelected == true).toList(),
+        custom: state.selectedCharges
+            .where((element) => element.isSelected == true)
+            .toList(),
       );
-      await box.putAt(getIndexOfEntity(id),invoice);
+      await box.putAt(getIndexOfEntity(id), invoice);
       getData();
     } catch (e) {
       if (e is IOException) {
@@ -198,12 +205,14 @@ class InvoicesProvider extends ChangeNotifier {
     return false;
   }
 
-  setSelectedBillProductItemsFromItemScreen({required List<UserBillProductItem> newItems}) {
+  setSelectedBillProductItemsFromItemScreen(
+      {required List<UserBillProductItem> newItems}) {
     state.billProductItem = [...newItems];
     notifyListeners();
   }
 
-  setSelectedChargesFromItemScreen({required List<InvoiceChargeModel> newCharges}) {
+  setSelectedChargesFromItemScreen(
+      {required List<InvoiceChargeModel> newCharges}) {
     state.selectedCharges = [...newCharges];
     notifyListeners();
   }
@@ -224,7 +233,8 @@ class InvoicesProvider extends ChangeNotifier {
   }
 
   // we can use this from InvoiceChargesScreen after deleting or edit charges
-  void changeFullSelectedChargesFromInvoiceChargesScreen({required List<InvoiceChargeModel> newList}) {
+  void changeFullSelectedChargesFromInvoiceChargesScreen(
+      {required List<InvoiceChargeModel> newList}) {
     state.selectedCharges = [...newList];
     notifyListeners();
     calculate();
@@ -255,15 +265,15 @@ class InvoicesProvider extends ChangeNotifier {
           double crg = 0;
           if (charge.type == 'percent') {
             crg = (charge.value / 100) * state.subTotal;
-            if(charge.operation == '+'){
+            if (charge.operation == '+') {
               state.finalPrice += crg.round();
-            }else{
+            } else {
               state.finalPrice -= crg.round();
             }
           } else {
-            if(charge.operation == '+'){
+            if (charge.operation == '+') {
               state.finalPrice += charge.value.round();
-            }else{
+            } else {
               state.finalPrice -= charge.value.round();
             }
           }
@@ -289,6 +299,14 @@ class InvoicesProvider extends ChangeNotifier {
 }
 
 class InvoicesProviderState {
+  // Switch states
+  bool isSocketOutletActive = false;
+  bool isPlugActive = false;
+  bool isFlexActive = false;
+  bool isBodyActive = false;
+  bool isOtherFaultyActive = false;
+  bool isPolarityTicked = false;
+
   bool isError;
   bool loading;
   bool empty;

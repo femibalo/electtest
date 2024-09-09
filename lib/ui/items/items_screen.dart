@@ -136,7 +136,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('select_equipment_items'.tr()),
+          title: Text('select_items'.tr()),
           actions: [_buildSaveButton(provider.state)],
         ),
         bottomNavigationBar: _buildPriceDetailCard(provider.state),
@@ -356,7 +356,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
                 const SizedBox(
                   width: 4,
                 ),
-                Text('add_new_equipment_item'.tr(),
+                Text('add_new_item'.tr(),
                     style: Theme.of(context).textTheme.bodyLarge),
               ],
             ),
@@ -389,8 +389,8 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
                   onRefresh: () {
                     addNewItem();
                   },
-                  text: 'no_equipment_items_added'.tr(),
-                  refreshButtonText: 'add_new_equipment_item'.tr(),
+                  text: 'no_items_added'.tr(),
+                  refreshButtonText: 'add_new_item'.tr(),
                 ),
               ],
             ),

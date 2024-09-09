@@ -29,6 +29,24 @@ class UserBillProductItem extends Equatable {
   @HiveField(10)
   final bool isDeleted;
 
+  // New fields
+  @HiveField(11)
+  final String equipmentId;
+  @HiveField(12)
+  final String location;
+  @HiveField(13)
+  final String serialNo;
+  @HiveField(14)
+  final num voltage;
+  @HiveField(15)
+  final num rating;
+  @HiveField(16)
+  final num fuse;
+  @HiveField(17)
+  final String inspectionFrequency;
+  @HiveField(18)
+  final bool continuityTestGreyedOut;
+
   UserBillProductItem({
     this.id = 0,
     this.name = "",
@@ -41,6 +59,15 @@ class UserBillProductItem extends Equatable {
     this.gstPercent = 0,
     this.discountPercent = 0,
     this.isDeleted = false,
+    // Initialize new fields
+    this.equipmentId = "",
+    this.location = "",
+    this.serialNo = "",
+    this.voltage = 0,
+    this.rating = 0,
+    this.fuse = 0,
+    this.inspectionFrequency = "",
+    this.continuityTestGreyedOut = false,
   });
 
   static UserBillProductItem fromJson(Map<String, dynamic> json) {
@@ -56,6 +83,15 @@ class UserBillProductItem extends Equatable {
       gstPercent: json['gstPercent'] ?? 0,
       discountPercent: json['discountPercent'] ?? 0,
       isDeleted: json['isDeleted'] ?? false,
+      // Map new fields
+      equipmentId: json['equipmentId'] ?? "",
+      location: json['location'] ?? "",
+      serialNo: json['serialNo'] ?? "",
+      voltage: json['voltage'] ?? 0,
+      rating: json['rating'] ?? 0,
+      fuse: json['fuse'] ?? 0,
+      inspectionFrequency: json['inspectionFrequency'] ?? "",
+      continuityTestGreyedOut: json['continuityTestGreyedOut'] ?? false,
     );
   }
 
@@ -71,22 +107,41 @@ class UserBillProductItem extends Equatable {
     num? gstPercent,
     num? discountPercent,
     bool? isDeleted,
+    // New fields
+    String? equipmentId,
+    String? location,
+    String? serialNo,
+    num? voltage,
+    num? rating,
+    num? fuse,
+    String? inspectionFrequency,
+    bool? continuityTestGreyedOut,
   }) {
     return UserBillProductItem(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        description: description ?? this.description,
-        price: price ?? this.price,
-        qty: qty ?? this.qty,
-        currencyID: currencyID ?? this.currencyID,
-        currencyCode: currencyCode ?? this.currencyCode,
-        taxPercent: taxPercent ?? this.taxPercent,
-        gstPercent: gstPercent ?? this.gstPercent,
-        discountPercent: discountPercent ?? this.discountPercent);
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      qty: qty ?? this.qty,
+      currencyID: currencyID ?? this.currencyID,
+      currencyCode: currencyCode ?? this.currencyCode,
+      taxPercent: taxPercent ?? this.taxPercent,
+      gstPercent: gstPercent ?? this.gstPercent,
+      discountPercent: discountPercent ?? this.discountPercent,
+      isDeleted: isDeleted ?? this.isDeleted,
+      // New fields
+      equipmentId: equipmentId ?? this.equipmentId,
+      location: location ?? this.location,
+      serialNo: serialNo ?? this.serialNo,
+      voltage: voltage ?? this.voltage,
+      rating: rating ?? this.rating,
+      fuse: fuse ?? this.fuse,
+      inspectionFrequency: inspectionFrequency ?? this.inspectionFrequency,
+      continuityTestGreyedOut: continuityTestGreyedOut ?? this.continuityTestGreyedOut,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    // ignore: prefer_collection_literals
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = id;
     data['name'] = name;
@@ -99,6 +154,15 @@ class UserBillProductItem extends Equatable {
     data['gstPercent'] = gstPercent;
     data['discountPercent'] = discountPercent;
     data['isDeleted'] = isDeleted;
+    // Map new fields
+    data['equipmentId'] = equipmentId;
+    data['location'] = location;
+    data['serialNo'] = serialNo;
+    data['voltage'] = voltage;
+    data['rating'] = rating;
+    data['fuse'] = fuse;
+    data['inspectionFrequency'] = inspectionFrequency;
+    data['continuityTestGreyedOut'] = continuityTestGreyedOut;
     return data;
   }
 
@@ -114,6 +178,15 @@ class UserBillProductItem extends Equatable {
         taxPercent,
         gstPercent,
         discountPercent,
-        isDeleted
+        isDeleted,
+        // New fields
+        equipmentId,
+        location,
+        serialNo,
+        voltage,
+        rating,
+        fuse,
+        inspectionFrequency,
+        continuityTestGreyedOut,
       ];
 }

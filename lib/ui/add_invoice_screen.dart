@@ -53,6 +53,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   final invoiceDateController = TextEditingController();
   final dueDateController = TextEditingController();
 
+ 
+
   @override
   void initState() {
     super.initState();
@@ -75,6 +77,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       provider.state.isNetworkError = false;
     });
   }
+
 
   init({required Invoices invoices}) {
     provider.state.selectedBillingEntity = BillingEntityProfiles(
@@ -812,99 +815,96 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                             }),
                           ],
                         ),
+                      ],
+                    ),
+                  ),
+                ),
+                    Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  child: const Divider(),
+                ),
 
-                        // New ExpansionTile for Additional Equipment Items
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  child: Theme(
+                    data: Theme.of(context)
+                        .copyWith(dividerColor: Colors.transparent),
+                    child: Column(
+                      children: [
+                        // Existing ExpansionTile for Additional Details
                         ExpansionTile(
                           tilePadding: EdgeInsets.zero,
-                          title: Text('additional_equipment_items'.tr(),
+                          initiallyExpanded: provider.state.detailInvoiceForEdit
+                                      .description.isNotEmpty ||
+                                  provider.state.detailInvoiceForEdit
+                                      .termsAndConditions.isNotEmpty
+                              ? true
+                              : false,
+                          title: Text('additional_details'.tr(),
                               style: Theme.of(context).textTheme.titleLarge),
                           children: [
-                            // Faulty Equipment options with switches
+                            // Note Switch
                             SwitchListTile(
-                              title: Text('Socket-outlet'.tr()),
-                              value: provider.state.isSocketOutletFaulty,
-                              onChanged: (bool value) {
-                                provider.changeFaultyEquipmentStatus(
-                                    'Socket-outlet', value);
-                              },
+                              contentPadding: EdgeInsets.zero,
+                              value: provider.state.isNotesActive,
+                              onChanged: provider.changeNotesActiveStatus,
+                              title: Text('notes'.tr(),
+                                  style:
+                                      Theme.of(context).textTheme.titleLarge),
                             ),
-                            SwitchListTile(
-                              title: Text('Plug'.tr()),
-                              value: provider.state.isPlugFaulty,
-                              onChanged: (bool value) {
-                                provider.changeFaultyEquipmentStatus(
-                                    'Plug', value);
-                              },
-                            ),
-                            SwitchListTile(
-                              title: Text('Flex'.tr()),
-                              value: provider.state.isFlexFaulty,
-                              onChanged: (bool value) {
-                                provider.changeFaultyEquipmentStatus(
-                                    'Flex', value);
-                              },
-                            ),
-                            SwitchListTile(
-                              title: Text('Body'.tr()),
-                              value: provider.state.isBodyFaulty,
-                              onChanged: (bool value) {
-                                provider.changeFaultyEquipmentStatus(
-                                    'Body', value);
-                              },
-                            ),
-
-                            // Other faulty equipment (text box)
-                            Container(
-                              margin: const EdgeInsets.only(top: 10.0),
-                              child: MTextFormField(
-                                controller: otherFaultyController,
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                keyboardType: TextInputType.text,
-                                textInputAction: TextInputAction.done,
-                                labelText: 'other_faulty_equipment'.tr(),
-                                onChanged: (value) {
-                                  provider.changeFaultyEquipmentStatus(
-                                      'Other', value.isNotEmpty);
-                                },
-                              ),
-                            ),
-
+                            Builder(builder: (context) {
+                              if (provider.state.isNotesActive) {
+                                return Container(
+                                  margin: const EdgeInsets.only(top: 10.0),
+                                  child: MTextFormField(
+                                    controller: notesController,
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
+                                    keyboardType: TextInputType.text,
+                                    textInputAction: TextInputAction.done,
+                                    labelText: 'notes'.tr(),
+                                    hintText: 'notes_placeholder'.tr(),
+                                  ),
+                                );
+                              }
+                              return const Opacity(opacity: 0);
+                            }),
                             // Divider
                             Container(
                                 margin: const EdgeInsets.only(top: 10),
                                 child: const Divider()),
 
-                            // Additional Measurement fields
-                            MTextFormField(
-                              controller: continuityController,
-                              keyboardType: TextInputType.number,
-                              textInputAction: TextInputAction.done,
-                              labelText: 'Continuity (Ω)'.tr(),
-                            ),
-                            MTextFormField(
-                              controller: insulationResistanceController,
-                              keyboardType: TextInputType.number,
-                              textInputAction: TextInputAction.done,
-                              labelText: 'Insulation Resistance (MΩ)'.tr(),
-                            ),
+                            // Terms and Conditions Switch
                             SwitchListTile(
-                              title: Text('Polarity'.tr()),
-                              value: provider.state.isPolarityCorrect,
-                              onChanged: provider.changePolarityStatus,
+                              contentPadding: EdgeInsets.zero,
+                              value: provider.state.isTermsConditionActive,
+                              onChanged: provider.changeTermsConditionStatus,
+                              title: Text('terms_and_condition'.tr()),
                             ),
-                            MTextFormField(
-                              controller: otherMeasurementController,
-                              keyboardType: TextInputType.text,
-                              textInputAction: TextInputAction.done,
-                              labelText: 'Other'.tr(),
-                            ),
+                            Builder(builder: (context) {
+                              if (provider.state.isTermsConditionActive) {
+                                return Container(
+                                  margin: const EdgeInsets.only(top: 10.0),
+                                  child: MTextFormField(
+                                    controller: termsConditionController,
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
+                                    keyboardType: TextInputType.text,
+                                    textInputAction: TextInputAction.done,
+                                    maxLines: 3,
+                                    labelText: 'terms_and_condition'.tr(),
+                                  ),
+                                );
+                              }
+                              return const Opacity(opacity: 0);
+                            }),
                           ],
                         ),
                       ],
                     ),
                   ),
                 )
+                
               ],
             ),
           ),

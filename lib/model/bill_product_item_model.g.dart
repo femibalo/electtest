@@ -28,13 +28,21 @@ class UserBillProductItemAdapter extends TypeAdapter<UserBillProductItem> {
       gstPercent: fields[8] as num,
       discountPercent: fields[9] as num,
       isDeleted: fields[10] as bool,
+      equipmentId: fields[11] as String,
+      location: fields[12] as String,
+      serialNo: fields[13] as String,
+      voltage: fields[14] as num,
+      rating: fields[15] as num,
+      fuse: fields[16] as num,
+      inspectionFrequency: fields[17] as String,
+      continuityTestGreyedOut: fields[18] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserBillProductItem obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +64,23 @@ class UserBillProductItemAdapter extends TypeAdapter<UserBillProductItem> {
       ..writeByte(9)
       ..write(obj.discountPercent)
       ..writeByte(10)
-      ..write(obj.isDeleted);
+      ..write(obj.isDeleted)
+      ..writeByte(11)
+      ..write(obj.equipmentId)
+      ..writeByte(12)
+      ..write(obj.location)
+      ..writeByte(13)
+      ..write(obj.serialNo)
+      ..writeByte(14)
+      ..write(obj.voltage)
+      ..writeByte(15)
+      ..write(obj.rating)
+      ..writeByte(16)
+      ..write(obj.fuse)
+      ..writeByte(17)
+      ..write(obj.inspectionFrequency)
+      ..writeByte(18)
+      ..write(obj.continuityTestGreyedOut);
   }
 
   @override
