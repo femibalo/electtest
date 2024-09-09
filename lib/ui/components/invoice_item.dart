@@ -64,27 +64,30 @@ class InvoiceItem extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: Text(
-                            "${model.currencyCode.toUpperCase()} ${NumberFormat("#,###").format(model.finalPrice)}",
+                            "${model.clientPhone}",
                           ),
+                          //  child: Text(
+                          //   "${model.currencyCode.toUpperCase()} ${NumberFormat("#,###").format(model.finalPrice)}",
+                          // ),
                         ),
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 5,
-                                ),
-                                child: Text(
-                                  'paid'.tr(),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.green),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Expanded(
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.end,
+                        //     children: [
+                        //       Container(
+                        //         padding: const EdgeInsets.symmetric(
+                        //           horizontal: 8,
+                        //           vertical: 5,
+                        //         ),
+                        //         child: Text(
+                        //           'paid'.tr(),
+                        //           textAlign: TextAlign.center,
+                        //           style: const TextStyle(color: Colors.green),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -106,7 +109,7 @@ class InvoiceItem extends StatelessWidget {
                           onViewInvoice();
                         });
                       },
-                      child: Text('view_invoice'.tr()),
+                      child: Text('view_register'.tr()),
                     ),
                     PopupMenuItem(
                       value: 2,
@@ -128,7 +131,7 @@ class InvoiceItem extends StatelessWidget {
                   PopupMenuItem(
                     value: 1,
                     onTap: onViewInvoice,
-                    child: Text('view_invoice'.tr()),
+                    child: Text('view_register'.tr()),
                   ),
                 ];
               },

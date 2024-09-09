@@ -47,7 +47,7 @@ class PDFViewWrapperState extends State<PDFViewWrapper> {
         supplier: Supplier(
           name: widget.invoices.profileName,
           address: widget.invoices.profileEmail,
-          paymentInfo: '',
+          logoURL: widget.invoices.logoURL,
         ),
         customer: Customer(
           name: widget.invoices.clientName,
@@ -61,14 +61,23 @@ class PDFViewWrapperState extends State<PDFViewWrapper> {
         ),
         items: widget.invoices.items
             .map(
-              (e) => InvoiceItem(
-                description: e.name,
-                date: DateTime.now(),
-                quantity: e.qty,
-                vat: e.taxPercent.ceilToDouble(),
-                discount: e.discountPercent.ceilToDouble(),
-                unitPrice: e.price.ceilToDouble(),
-              ),
+              (e) => UserBillProductItem(
+                  // description: e.name,
+                  // date: DateTime.now(),
+                  // quantity: e.qty,
+                  // vat: e.taxPercent.ceilToDouble(),
+                  // discount: e.discountPercent.ceilToDouble(),
+                  // unitPrice: e.price.ceilToDouble(),
+                  EquipmentIDNumber: e.equipmentId,
+                  Location: e.location,
+                  description: e.description,
+                  SerialNo: 34,
+                  FormalVisualInspectionByOccupant: "Formal visual inspection",
+                  CombinedInspectionByAssessor: "Combined visual inspection",
+                  PassFail: "Pass fail",
+                  SuitableForEnv: "suitable for environment",
+                  SuitableForContinuedUse: "suitable for continuous use",
+                  Comments: "comments"),
             )
             .toList()
         // items: [

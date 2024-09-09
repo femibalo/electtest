@@ -87,24 +87,24 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('registers'.tr()),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: IconButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LanguageScreen()),
-                  );
-                },
-                icon: const Icon(
-                  Icons.language_outlined,
-                  color: Colors.white,
-                )),
-          )
-        ],
+        title: Text('Registers'.tr()),
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        //     child: IconButton(
+        //         onPressed: () {
+        //           Navigator.pushReplacement(
+        //             context,
+        //             MaterialPageRoute(
+        //                 builder: (context) => const LanguageScreen()),
+        //           );
+        //         },
+        //         icon: const Icon(
+        //           Icons.language_outlined,
+        //           color: Colors.white,
+        //         )),
+        //   )
+        // ],
       ),
       body: Container(
           height: MediaQuery.of(context).size.height / 1,
@@ -154,7 +154,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
             textCapitalization: TextCapitalization.sentences,
             maxLines: 1,
             onChanged: onSearchChanged,
-            labelText: 'search_invoice'.tr(),
+            labelText: 'search_registers'.tr(),
             prefixIcon: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

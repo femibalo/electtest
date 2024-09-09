@@ -20,7 +20,7 @@ class PDFScreenState extends State<PDFScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("invoice_viewer".tr()),
+        title: Text("register_viewer".tr()),
       ),
       body: Column(
         children: [

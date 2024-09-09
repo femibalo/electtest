@@ -34,7 +34,8 @@ class ItemListInvoiceItem extends StatelessWidget {
     String discount = model.discountPercent == 0
         ? ""
         : " | disc ${model.discountPercent.toString()}%";
-    String subtitle = "$price$tax$discount";
+    // String subtitle = "$price$tax$discount";
+    String subtitle = model.equipmentId;
     return ElevatedCard(
       margin: const EdgeInsets.only(bottom: 15),
       child: Row(
@@ -57,35 +58,35 @@ class ItemListInvoiceItem extends StatelessWidget {
               subtitle: Text(subtitle),
             ),
           ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                buildCircleBorderButton(
-                  icons: Icons.remove,
-                  onTap: model.isDeleted ? () {} : onDecrease,
-                  context: context,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: Text(
-                    selectedItems.any((element) => element.id == model.id)
-                        ? selectedItems
-                            .singleWhere((element) => element.id == model.id)
-                            .qty
-                            .toString()
-                        : model.qty.toString(),
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-                buildCircleBorderButton(
-                  icons: Icons.add,
-                  onTap: model.isDeleted ? () {} : onIncrease,
-                  context: context,
-                ),
-              ],
-            ),
-          ),
+          // Expanded(
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+          //     children: [
+          //       buildCircleBorderButton(
+          //         icons: Icons.remove,
+          //         onTap: model.isDeleted ? () {} : onDecrease,
+          //         context: context,
+          //       ),
+          //       Padding(
+          //         padding: const EdgeInsets.symmetric(horizontal: 2.0),
+          //         child: Text(
+          //           selectedItems.any((element) => element.id == model.id)
+          //               ? selectedItems
+          //                   .singleWhere((element) => element.id == model.id)
+          //                   .qty
+          //                   .toString()
+          //               : model.qty.toString(),
+          //           style: Theme.of(context).textTheme.titleLarge,
+          //         ),
+          //       ),
+          //       buildCircleBorderButton(
+          //         icons: Icons.add,
+          //         onTap: model.isDeleted ? () {} : onIncrease,
+          //         context: context,
+          //       ),
+          //     ],
+          //   ),
+          // ),
           Container(
             width: 25,
             margin: const EdgeInsets.only(left: 10),

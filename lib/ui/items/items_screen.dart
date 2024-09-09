@@ -441,7 +441,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
                     showCustomAlertDialog(
                       title: 'delete ${userItem.name}',
                       subTitle:
-                          'are_you_sure_want_to_delete_equipment_item'.tr(),
+                          'are_you_sure_want_to_delete_item'.tr(),
                       context: context,
                       leftButtonText: 'yes'.tr(),
                       rightButtonText: 'cancel'.tr(),

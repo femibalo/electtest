@@ -20,9 +20,9 @@ class PdfInvoiceApi {
         buildTitle(invoice),
         buildInvoice(invoice),
         Divider(),
-        buildTotal(invoice),
+        // buildTotal(invoice),
       ],
-      // footer: (context) => buildFooter(invoice),
+      footer: (context) => buildFooter(invoice),
     ));
 
     return PdfApi.saveDocument(name: 'my_invoice.pdf', pdf: pdf);
@@ -39,10 +39,15 @@ class PdfInvoiceApi {
               Container(
                 height: 50,
                 width: 50,
-                child: BarcodeWidget(
-                  barcode: Barcode.qrCode(),
-                  data: invoice.info.number,
-                ),
+                child: invoice.supplier.logoURL.isNotEmpty
+                    ? Image(
+                        MemoryImage(
+                          // Assuming you have the image data as bytes (e.g. from an API or file)
+                          File(invoice.supplier.logoURL).readAsBytesSync(),
+                        ),
+                        fit: BoxFit.cover,
+                      )
+                    : SizedBox.shrink(), // Handle case when logoURL is empty
               ),
             ],
           ),
@@ -52,7 +57,7 @@ class PdfInvoiceApi {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               buildCustomerAddress(invoice.customer),
-              buildInvoiceInfo(invoice.info),
+              // buildInvoiceInfo(invoice.info),
             ],
           ),
         ],
@@ -105,7 +110,7 @@ class PdfInvoiceApi {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'INVOICE',
+            'Equipment register',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 0.8 * PdfPageFormat.cm),
@@ -116,23 +121,44 @@ class PdfInvoiceApi {
 
   static Widget buildInvoice(Invoice invoice) {
     final headers = [
-      'Description',
-      'Date',
-      'Quantity',
-      'Unit Price',
-      'VAT',
-      'Total'
+      // 'Description',
+      // 'Date',
+      // 'Quantity',
+      // 'Unit Price',
+      // 'VAT',
+      // 'Total'
+
+      " Equipment ID no.",
+      "Location",
+      "Equipment description",
+      "Serial No.",
+      "Formal Visual inspection by occupant",
+      "Combined Inspection by assessor",
+      "Pass/Fail",
+      "Suitable for Env",
+      "Suitable for continued use",
+      "Comments",
     ];
     final data = invoice.items.map((item) {
-      final total = item.unitPrice * item.quantity;
+      // final total = item.unitPrice * item.quantity;
 
       return [
+        item.EquipmentIDNumber,
+        item.Location,
         item.description,
-        formatDate(item.date),
-        '${item.quantity}',
-        '\$ ${item.unitPrice}',
-        '${item.vat} %',
-        '\$ ${total.toStringAsFixed(2)}',
+        item.SerialNo,
+        "Formal Visual inspection by occupant",
+        "Combined Inspection by assessor",
+        item.SuitableForContinuedUse,
+        "Suitable for Env",
+        "Suitable for continued use",
+        "Comments"
+        // item.description,
+        // formatDate(item.date),
+        // '${item.quantity}',
+        // '\$ ${item.unitPrice}',
+        // '${item.vat} %',
+        // '\$ ${total.toStringAsFixed(2)}',
       ];
     }).toList();
 
@@ -155,69 +181,69 @@ class PdfInvoiceApi {
     );
   }
 
-  static Widget buildTotal(Invoice invoice) {
-    double total = 0.0;
-    double netTotal = 0.0;
-    double discount = 0.0;
-    double tax = 0.0;
-    double discountPercent = 0.0;
-    double taxPercent = 0.0;
-    invoice.items.map((item) {
-      netTotal += (item.quantity * item.unitPrice);
-      discount += (item.discount / 100) * netTotal;
-      tax += (item.vat / 100) * (netTotal - discount);
-      discountPercent += item.discount;
-      taxPercent += item.vat;
-    }).toList();
+  // static Widget buildTotal(Invoice invoice) {
+  //   double total = 0.0;
+  //   double netTotal = 0.0;
+  //   double discount = 0.0;
+  //   double tax = 0.0;
+  //   double discountPercent = 0.0;
+  //   double taxPercent = 0.0;
+  //   invoice.items.map((item) {
+  //     netTotal += (item.quantity * item.unitPrice);
+  //     discount += (item.discount / 100) * netTotal;
+  //     tax += (item.vat / 100) * (netTotal - discount);
+  //     discountPercent += item.discount;
+  //     taxPercent += item.vat;
+  //   }).toList();
 
-    total = netTotal + tax - discount;
+  //   total = netTotal + tax - discount;
 
-    return Container(
-      alignment: Alignment.centerRight,
-      child: Row(
-        children: [
-          Spacer(flex: 6),
-          Expanded(
-            flex: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildText(
-                  title: 'Net total',
-                  value: formatPrice(netTotal),
-                  unite: true,
-                ),
-                buildText(
-                  title: 'Vat $taxPercent %',
-                  value: formatPrice(tax),
-                  unite: true,
-                ),
-                buildText(
-                  title: 'Discount $discountPercent %',
-                  value: formatPrice(discount),
-                  unite: true,
-                ),
-                Divider(),
-                buildText(
-                  title: 'Total amount due',
-                  titleStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  value: formatPrice(total),
-                  unite: true,
-                ),
-                SizedBox(height: 2 * PdfPageFormat.mm),
-                Container(height: 1, color: PdfColors.grey400),
-                SizedBox(height: 0.5 * PdfPageFormat.mm),
-                Container(height: 1, color: PdfColors.grey400),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  //   return Container(
+  //     alignment: Alignment.centerRight,
+  //     child: Row(
+  //       children: [
+  //         Spacer(flex: 6),
+  //         Expanded(
+  //           flex: 4,
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               buildText(
+  //                 title: 'Net total',
+  //                 value: formatPrice(netTotal),
+  //                 unite: true,
+  //               ),
+  //               buildText(
+  //                 title: 'Vat $taxPercent %',
+  //                 value: formatPrice(tax),
+  //                 unite: true,
+  //               ),
+  //               buildText(
+  //                 title: 'Discount $discountPercent %',
+  //                 value: formatPrice(discount),
+  //                 unite: true,
+  //               ),
+  //               Divider(),
+  //               buildText(
+  //                 title: 'Total amount due',
+  //                 titleStyle: TextStyle(
+  //                   fontSize: 14,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //                 value: formatPrice(total),
+  //                 unite: true,
+  //               ),
+  //               SizedBox(height: 2 * PdfPageFormat.mm),
+  //               Container(height: 1, color: PdfColors.grey400),
+  //               SizedBox(height: 0.5 * PdfPageFormat.mm),
+  //               Container(height: 1, color: PdfColors.grey400),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   static Widget buildFooter(Invoice invoice) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -226,7 +252,7 @@ class PdfInvoiceApi {
           SizedBox(height: 2 * PdfPageFormat.mm),
           buildSimpleText(title: 'Address', value: invoice.supplier.address),
           SizedBox(height: 1 * PdfPageFormat.mm),
-          buildSimpleText(title: 'Paypal', value: invoice.supplier.paymentInfo),
+          // buildSimpleText(title: 'Paypal', value: invoice.supplier.paymentInfo),
         ],
       );
 
