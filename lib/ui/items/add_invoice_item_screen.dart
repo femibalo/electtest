@@ -173,7 +173,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
     return Scaffold(
         appBar: AppBar(
           title:
-              Text(widget.isEditMode ? 'edit_item'.tr() : 'add_new_item'.tr()),
+              Text(widget.isEditMode ? 'Edit Item'.tr() : 'Add New Item'.tr()),
           actions: [_buildSaveButton(provider.state)],
         ),
         body: _getWidgetBasedOnState(provider.state));
@@ -272,7 +272,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'item_name'.tr()),
+                      labelText: 'Item Name'.tr()),
                 ),
 
                 Container(
@@ -282,7 +282,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       textInputAction: TextInputAction.next,
                       textCapitalization: TextCapitalization.sentences,
                       maxLines: 1,
-                      labelText: 'item_description'.tr()),
+                      labelText: 'Item Description'.tr()),
                 ),
                 // === item description
                 // === new Item
@@ -295,11 +295,11 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return 'equipment_id_empty'.tr();
+                          return 'Equipment Id Empty'.tr();
                         }
                         return null;
                       },
-                      labelText: 'equipment_id'.tr()),
+                      labelText: 'Equipment Id'.tr()),
                 ),
 
                 // === Type of Class (Dropdown)
@@ -308,7 +308,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                   child: DropdownButtonFormField<String>(
                     value: selectedClass,
                     decoration:
-                        InputDecoration(labelText: 'type_of_class'.tr()),
+                        InputDecoration(labelText: 'Type of Class'.tr()),
                     items: [
                       'Class 0',
                       'Class I',
@@ -322,7 +322,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         .toList(),
                     onChanged: handleClassChange,
                     validator: (value) =>
-                        value == null ? 'class_type_empty'.tr() : null,
+                        value == null ? 'Class Type Empty'.tr() : null,
                   ),
                 ),
 
@@ -336,11 +336,11 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return 'location_empty'.tr();
+                          return 'Location Empty'.tr();
                         }
                         return null;
                       },
-                      labelText: 'location'.tr()),
+                      labelText: 'Location'.tr()),
                 ),
 
                 // === Serial No
@@ -357,7 +357,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'serial_no'.tr()),
+                      labelText: 'Serial No'.tr()),
                 ),
 
                 // === Voltage (V)
@@ -375,7 +375,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'voltage_v'.tr()),
+                      labelText: 'Voltage'.tr()),
                 ),
 
                 // === Rating (Watts or A)
@@ -393,7 +393,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'rating_watts_or_a'.tr()),
+                      labelText: 'Rating Watts_or_a'.tr()),
                 ),
 
                 // === Fuse (A)
@@ -411,7 +411,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'fuse_a'.tr()),
+                      labelText: 'Fuse'.tr()),
                 ),
 
                 // === Frequency of Inspection
@@ -428,7 +428,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'frequency_of_inspection'.tr()),
+                      labelText: 'Frequency of Inspection'.tr()),
                 ),
 
                 // === Continuity Test (grey out if Class II is selected)
@@ -439,7 +439,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                     keyboardType: TextInputType.number,
                     maxLines: 1,
                     enabled: !greyOutContinuityTest,
-                    labelText: 'continuity_test'.tr(),
+                    labelText: 'Continuity Test'.tr(),
                   ),
                 ),
                 // === item price

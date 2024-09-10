@@ -389,8 +389,8 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
                   onRefresh: () {
                     addNewItem();
                   },
-                  text: 'no_items_added'.tr(),
-                  refreshButtonText: 'add_new_item'.tr(),
+                  text: 'No Items Added'.tr(),
+                  refreshButtonText: 'Add New Item'.tr(),
                 ),
               ],
             ),
@@ -405,7 +405,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
               onRefresh: () {
                 refreshData();
               },
-              text: 'no_results_found'.tr(),
+              text: 'No Results Found'.tr(),
             ),
           );
         }
@@ -439,7 +439,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
                   const Duration(seconds: 0),
                   () {
                     showCustomAlertDialog(
-                      title: 'delete ${userItem.name}',
+                      title: 'Delete ${userItem.name}',
                       subTitle:
                           'are_you_sure_want_to_delete_item'.tr(),
                       context: context,

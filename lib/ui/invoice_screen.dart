@@ -154,7 +154,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
             textCapitalization: TextCapitalization.sentences,
             maxLines: 1,
             onChanged: onSearchChanged,
-            labelText: 'search_registers'.tr(),
+            labelText: 'Registers'.tr(),
             prefixIcon: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -198,7 +198,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                   width: 4,
                 ),
                 Text(
-                  'add_new_register'.tr(),
+                  'Add New Register'.tr(),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -231,8 +231,8 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                   onRefresh: () {
                     AddInvoiceScreen.launchScreen(context);
                   },
-                  text: 'no_register_added'.tr(),
-                  refreshButtonText: 'add_new_register'.tr(),
+                  text: 'No Register'.tr(),
+                  refreshButtonText: 'Add Register'.tr(),
                 ),
               ],
             ),
@@ -247,7 +247,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
               onRefresh: () {
                 refreshData();
               },
-              text: 'no_results_found'.tr(),
+              text: 'No Results Found'.tr(),
             ),
           );
         } else {
@@ -267,9 +267,9 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                       const Duration(seconds: 0),
                       () {
                         showCustomAlertDialog(
-                          title: 'delete_invoice',
+                          title: 'Delete Register',
                           subTitle:
-                              'are_you_sure_want_to_delete_this_invoice'.tr(),
+                              'are_you_sure_want_to_delete_this_register'.tr(),
                           context: context,
                           leftButtonText: 'yes'.tr(),
                           rightButtonText: 'cancel'.tr(),
@@ -283,7 +283,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                               if (value) {
                                 showSnackBar(
                                   context: context,
-                                  text: 'invoice_deleted'.tr(),
+                                  text: 'register_deleted'.tr(),
                                   snackBarType: SnackBarType.success,
                                 );
                               } else {

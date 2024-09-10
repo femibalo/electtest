@@ -53,8 +53,6 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   final invoiceDateController = TextEditingController();
   final dueDateController = TextEditingController();
 
- 
-
   @override
   void initState() {
     super.initState();
@@ -77,7 +75,6 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       provider.state.isNetworkError = false;
     });
   }
-
 
   init({required Invoices invoices}) {
     provider.state.selectedBillingEntity = BillingEntityProfiles(
@@ -230,13 +227,13 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
         Navigator.pop(context);
         showSnackBar(
           context: context,
-          text: 'invoice updated',
+          text: 'Register updated',
           snackBarType: SnackBarType.success,
         );
       } else {
         showSnackBar(
           context: context,
-          text: 'update error',
+          text: 'Update error',
           snackBarType: SnackBarType.success,
         );
       }
@@ -263,13 +260,13 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
         Navigator.pop(context);
         showSnackBar(
           context: context,
-          text: 'add invoice success',
+          text: 'Add Register Success',
           snackBarType: SnackBarType.success,
         );
       } else {
         showSnackBar(
           context: context,
-          text: 'add error',
+          text: 'Add error',
           snackBarType: SnackBarType.success,
         );
       }
@@ -300,7 +297,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       floatingActionButton: _buildSaveButton(provider.state),
       appBar: AppBar(
         title: Text(
-          widget.isEditMode ? 'edit_invoice'.tr() : 'new_invoice'.tr(),
+          widget.isEditMode ? 'Edit Register'.tr() : 'New Register'.tr(),
         ),
         // actions: [_buildSaveButton(provider.state)]
       ),
@@ -363,7 +360,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
         onPressed: () {
           validation();
         },
-        child: Text('save'.tr(),
+        child: Text('Save'.tr(),
             style: Theme.of(context)
                 .textTheme
                 .titleLarge
@@ -400,7 +397,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: Text('assessor'.tr(),
+                          child: Text('Assessor'.tr(),
                               style: Theme.of(context).textTheme.titleLarge),
                         ),
                         SizedBox(
@@ -410,7 +407,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                             onPressed: () {
                               changeEntity();
                             },
-                            child: Text('edit'.tr(),
+                            child: Text('Edit'.tr(),
                                 style: Theme.of(context).textTheme.titleLarge),
                           ),
                         ),
@@ -441,7 +438,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                   .toString(),
                               style: Theme.of(context).textTheme.titleLarge)
                           : Text(
-                              'please_add_assessor'.tr(),
+                              'Add_Assessor'.tr(),
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                     ),
@@ -549,7 +546,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                           isInvoiceDate: true,
                                         );
                                       },
-                                      labelText: 'register_date'.tr(),
+                                      labelText: 'Register Date'.tr(),
                                       readOnly: true,
                                       suffixIcon: const Padding(
                                         padding: EdgeInsets.only(right: 5.0),
@@ -614,7 +611,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
-                            child: Text('client_details'.tr(),
+                            child: Text('Client Details'.tr(),
                                 style: Theme.of(context).textTheme.titleLarge),
                           ),
                           SizedBox(
@@ -626,7 +623,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                     onPressed: () {
                                       changeClient();
                                     },
-                                    child: Text('edit'.tr(),
+                                    child: Text('Edit'.tr(),
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleLarge));
@@ -635,7 +632,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                   onPressed: () {
                                     changeClient();
                                   },
-                                  child: Text('add'.tr(),
+                                  child: Text('Add'.tr(),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge));
@@ -690,7 +687,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: Text('equipment_items'.tr(),
+                        child: Text('Equipment Items'.tr(),
                             style: Theme.of(context).textTheme.titleLarge),
                       ),
                       SizedBox(
@@ -702,7 +699,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                   onPressed: () {
                                     changeItems();
                                   },
-                                  child: Text('add'.tr(),
+                                  child: Text('Add'.tr(),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge));
@@ -711,7 +708,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                 onPressed: () {
                                   changeItems();
                                 },
-                                child: Text('edit'.tr(),
+                                child: Text('Edit'.tr(),
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge));
@@ -755,7 +752,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                       .termsAndConditions.isNotEmpty
                               ? true
                               : false,
-                          title: Text('additional_details'.tr(),
+                          title: Text('Additional Details'.tr(),
                               style: Theme.of(context).textTheme.titleLarge),
                           children: [
                             // Note Switch
@@ -819,7 +816,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                     ),
                   ),
                 ),
-                    Container(
+                Container(
                   margin: const EdgeInsets.only(top: 10),
                   child: const Divider(),
                 ),
@@ -840,7 +837,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                       .termsAndConditions.isNotEmpty
                               ? true
                               : false,
-                          title: Text('additional_details'.tr(),
+                          title: Text('Additional Details'.tr(),
                               style: Theme.of(context).textTheme.titleLarge),
                           children: [
                             // Note Switch
@@ -904,7 +901,6 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                     ),
                   ),
                 )
-                
               ],
             ),
           ),

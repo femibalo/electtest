@@ -109,7 +109,7 @@ class InvoiceItem extends StatelessWidget {
                           onViewInvoice();
                         });
                       },
-                      child: Text('view_register'.tr()),
+                      child: Text('View Register'.tr()),
                     ),
                     PopupMenuItem(
                       value: 2,
@@ -118,12 +118,12 @@ class InvoiceItem extends StatelessWidget {
                           onEdit();
                         });
                       },
-                      child: Text('edit'.tr()),
+                      child: Text('Edit'.tr()),
                     ),
                     PopupMenuItem(
                       value: 4,
                       onTap: onDelete,
-                      child: Text('delete'.tr()),
+                      child: Text('Delete'.tr()),
                     ),
                   ];
                 }
@@ -131,7 +131,7 @@ class InvoiceItem extends StatelessWidget {
                   PopupMenuItem(
                     value: 1,
                     onTap: onViewInvoice,
-                    child: Text('view_register'.tr()),
+                    child: Text('View Register'.tr()),
                   ),
                 ];
               },

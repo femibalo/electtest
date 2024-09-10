@@ -44,7 +44,7 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
     final provider = Provider.of<InvoicesProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('invoice_generating...'.tr()),
+        title: Text('Register Generating...'.tr()),
       ),
       body: _getWidgetBasedOnState(provider.state, widget.invoices),
     );
