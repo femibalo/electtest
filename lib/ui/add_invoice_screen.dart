@@ -438,7 +438,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                   .toString(),
                               style: Theme.of(context).textTheme.titleLarge)
                           : Text(
-                              'Add_Assessor'.tr(),
+                              'Add Assessor'.tr(),
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                     ),
@@ -504,7 +504,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                         child: Row(
                           children: [
                             Expanded(
-                              child: Text('date'.tr(),
+                              child: Text('Date'.tr(),
                                   style:
                                       Theme.of(context).textTheme.titleLarge),
                             ),

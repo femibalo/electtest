@@ -136,7 +136,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('select_items'.tr()),
+          title: Text('select items'.tr()),
           actions: [_buildSaveButton(provider.state)],
         ),
         bottomNavigationBar: _buildPriceDetailCard(provider.state),
@@ -264,7 +264,7 @@ class _InvoiceItemsScreenState extends State<InvoiceItemsScreen> {
         onPressed: () {
           saveSelectedItems();
         },
-        child: Text('save'.tr(),
+        child: Text('Save'.tr(),
             style: Theme.of(context)
                 .textTheme
                 .titleLarge

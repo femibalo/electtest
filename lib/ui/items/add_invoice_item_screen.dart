@@ -124,13 +124,13 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
       if (widget.isEditMode) {
         showSnackBar(
           context: context,
-          text: 'edit item success',
+          text: 'Edit item success',
           snackBarType: SnackBarType.success,
         );
       } else {
         showSnackBar(
           context: context,
-          text: 'add item success',
+          text: 'Add item success',
           snackBarType: SnackBarType.success,
         );
       }
@@ -211,7 +211,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
             validation();
           }
         },
-        child: Text(widget.isEditMode ? 'update'.tr() : 'save'.tr(),
+        child: Text(widget.isEditMode ? 'Update'.tr() : 'Save'.tr(),
             style: Theme.of(context)
                 .textTheme
                 .titleLarge
@@ -268,7 +268,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return 'item_name_empty'.tr();
+                          return 'Item name empty'.tr();
                         }
                         return null;
                       },
@@ -282,7 +282,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       textInputAction: TextInputAction.next,
                       textCapitalization: TextCapitalization.sentences,
                       maxLines: 1,
-                      labelText: 'Item Description'.tr()),
+                      labelText: 'Description'.tr()),
                 ),
                 // === item description
                 // === new Item
@@ -299,7 +299,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'Equipment Id'.tr()),
+                      labelText: 'Equipment Id number'.tr()),
                 ),
 
                 // === Type of Class (Dropdown)
@@ -357,7 +357,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'Serial No'.tr()),
+                      labelText: 'Serial no'.tr()),
                 ),
 
                 // === Voltage (V)
@@ -371,7 +371,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return 'voltage_empty'.tr();
+                          return 'voltage empty'.tr();
                         }
                         return null;
                       },
@@ -389,11 +389,11 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return 'rating_empty'.tr();
+                          return 'rating empty'.tr();
                         }
                         return null;
                       },
-                      labelText: 'Rating Watts_or_a'.tr()),
+                      labelText: 'Rating(watts or A)'.tr()),
                 ),
 
                 // === Fuse (A)
@@ -411,7 +411,7 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'Fuse'.tr()),
+                      labelText: 'Fuse(A)'.tr()),
                 ),
 
                 // === Frequency of Inspection
@@ -424,11 +424,11 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return 'inspection_frequency_empty'.tr();
+                          return 'inspection frequency empty'.tr();
                         }
                         return null;
                       },
-                      labelText: 'Frequency of Inspection'.tr()),
+                      labelText: 'Frequency of inspection'.tr()),
                 ),
 
                 // === Continuity Test (grey out if Class II is selected)
