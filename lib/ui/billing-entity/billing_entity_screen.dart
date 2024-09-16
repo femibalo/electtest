@@ -127,7 +127,7 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
       floatingActionButton: _buildSaveButton(provider.state),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
-        title: Text('assessor'.tr()),
+        title: Text('Assessor'.tr()),
       ),
       body: Container(
           height: MediaQuery.of(context).size.height / 1,
@@ -182,7 +182,7 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
             textCapitalization: TextCapitalization.sentences,
             maxLines: 1,
             onChanged: onSearchChanged,
-            labelText: 'search_assessor'.tr(),
+            labelText: 'Search'.tr(),
             prefixIcon: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -225,7 +225,7 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                   width: 4,
                 ),
                 Text(
-                  'add_new_assessor'.tr(),
+                  'Add Assessor'.tr(),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
@@ -256,8 +256,8 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                   onRefresh: () {
                     addNewEntity();
                   },
-                  text: 'no_assessor_added',
-                  refreshButtonText: 'add_new_assessor'.tr(),
+                  text: 'No Assessor',
+                  refreshButtonText: 'Add Assessor'.tr(),
                 ),
               ],
             ),
@@ -304,7 +304,7 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
                     showCustomAlertDialog(
                       title: "delete ${profile.name}".tr(),
                       subTitle:
-                          "are_you_sure_want_to_delete_billing_assessor".tr(),
+                          "are_you_sure_want_to_delete assessor".tr(),
                       context: context,
                       leftButtonText: 'yes'.tr(),
                       rightButtonText: 'cancel'.tr(),
@@ -390,7 +390,7 @@ class _BillingEntityScreenState extends State<BillingEntityScreen> {
         onPressed: () {
           saveSelectedEntity();
         },
-        child: Text('save'.tr(), style: Theme.of(context).textTheme.titleLarge),
+        child: Text('Save'.tr(), style: Theme.of(context).textTheme.titleLarge),
       ),
     );
   }

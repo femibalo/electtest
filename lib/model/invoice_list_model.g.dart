@@ -46,13 +46,27 @@ class InvoicesAdapter extends TypeAdapter<Invoices> {
       items: (fields[26] as List).cast<UserBillProductItem>(),
       termsAndConditions: fields[28] as String,
       custom: (fields[27] as List).cast<InvoiceChargeModel>(),
+      isSocketOutletFaulty: fields[29] as bool,
+      isPlugFaulty: fields[30] as bool,
+      isFlexFaulty: fields[31] as bool,
+      isBodyFaulty: fields[32] as bool,
+      continuityOhms: fields[33] as String,
+      insulationResistance: fields[34] as String,
+      isPolarityCorrect: fields[35] as bool,
+      otherCondition: fields[36] as String,
+      environmentSuitability: fields[37] as String?,
+      isContinuedUseSuitable: fields[38] as String?,
+      passOrFail: fields[39] as String?,
+      comments: fields[40] as String,
+      isRewireNeeded: fields[41] as bool,
+      isFuseReplacementNeeded: fields[42] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Invoices obj) {
     writer
-      ..writeByte(29)
+      ..writeByte(43)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -110,7 +124,35 @@ class InvoicesAdapter extends TypeAdapter<Invoices> {
       ..writeByte(27)
       ..write(obj.custom)
       ..writeByte(28)
-      ..write(obj.termsAndConditions);
+      ..write(obj.termsAndConditions)
+      ..writeByte(29)
+      ..write(obj.isSocketOutletFaulty)
+      ..writeByte(30)
+      ..write(obj.isPlugFaulty)
+      ..writeByte(31)
+      ..write(obj.isFlexFaulty)
+      ..writeByte(32)
+      ..write(obj.isBodyFaulty)
+      ..writeByte(33)
+      ..write(obj.continuityOhms)
+      ..writeByte(34)
+      ..write(obj.insulationResistance)
+      ..writeByte(35)
+      ..write(obj.isPolarityCorrect)
+      ..writeByte(36)
+      ..write(obj.otherCondition)
+      ..writeByte(37)
+      ..write(obj.environmentSuitability)
+      ..writeByte(38)
+      ..write(obj.isContinuedUseSuitable)
+      ..writeByte(39)
+      ..write(obj.passOrFail)
+      ..writeByte(40)
+      ..write(obj.comments)
+      ..writeByte(41)
+      ..write(obj.isRewireNeeded)
+      ..writeByte(42)
+      ..write(obj.isFuseReplacementNeeded);
   }
 
   @override

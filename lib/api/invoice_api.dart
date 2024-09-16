@@ -12,7 +12,6 @@ const String invoice = 'invoice';
 
 class InvoicesProvider extends ChangeNotifier {
   final box = Hive.box<Invoices>(invoice);
-  
 
   InvoicesProviderState state = InvoicesProviderState(
     billProductItem: [],
@@ -80,6 +79,94 @@ class InvoicesProvider extends ChangeNotifier {
     }
     state.loading = false;
     notifyListeners();
+  }
+
+  void togglePolarity() {
+    state.isPolarityCorrect = !state.isPolarityCorrect;
+    notifyListeners();
+  }
+
+// To change Socket-outlet faulty status
+  void changeSocketOutletFaultyStatus(bool? value) {
+    state.isSocketOutletFaulty = value ?? false;
+    notifyListeners();
+  }
+
+// To change Plug faulty status
+  void changePlugFaultyStatus(bool? value) {
+    state.isPlugFaulty = value ?? false;
+    notifyListeners();
+  }
+
+// To change Flex faulty status
+  void changeFlexFaultyStatus(bool? value) {
+    state.isFlexFaulty = value ?? false;
+    notifyListeners();
+  }
+
+// To change Body faulty status
+  void changeBodyFaultyStatus(bool? value) {
+    state.isBodyFaulty = value ?? false;
+    notifyListeners();
+  }
+
+  void changeEnvironmentSuitability(String? suitability) {
+    state.environmentSuitability = suitability;
+    notifyListeners();
+  }
+
+  void changeContinuedUseSuitability(String? suitability) {
+    state.isContinuedUseSuitable = suitability;
+    notifyListeners();
+  }
+
+  void changePassOrFail(String? result) {
+    state.passOrFail = result;
+    notifyListeners();
+  }
+
+  void updateComments(String comments) {
+    state.comments = comments;
+    notifyListeners();
+  }
+
+  // Method to handle rewire checkbox (Tick or Cross)
+  void changeRewireStatus(bool? value) {
+    state.isRewireNeeded = value ?? false;
+
+    notifyListeners();
+  }
+
+  // Method to handle fuse replacement checkbox (Tick or Cross)
+  void changeFuseReplacementStatus(bool? value) {
+    state.isFuseReplacementNeeded = value ?? false;
+    notifyListeners();
+  }
+
+  void addToRepairRegister(String item) {
+    // state.repairRegister.add(item);
+    // notifyListeners();
+  }
+
+  void removeFromRepairRegister(String item) {
+    // state.repairRegister.remove(item);
+    // notifyListeners();
+  }
+
+  void enablePhotoOption(String item) {
+    // Logic to enable photo option for the item
+  }
+
+  void disablePhotoOption(String item) {
+    // Logic to disable photo option for the item
+  }
+
+  void uploadRewirePhoto() {
+    // Logic to upload a photo for rewire
+  }
+
+  void uploadFuseReplacementPhoto() {
+    // Logic to upload a photo for fuse replacement
   }
 
   changeDate({required dynamic newDate, required isInvoiceDate}) {
@@ -300,12 +387,18 @@ class InvoicesProvider extends ChangeNotifier {
 
 class InvoicesProviderState {
   // Switch states
-  bool isSocketOutletActive = false;
-  bool isPlugActive = false;
-  bool isFlexActive = false;
-  bool isBodyActive = false;
-  bool isOtherFaultyActive = false;
-  bool isPolarityTicked = false;
+  bool isSocketOutletFaulty;
+  bool isPlugFaulty;
+  bool isFlexFaulty;
+  bool isBodyFaulty;
+  bool isOtherFaultyActive;
+  bool isPolarityCorrect; // Default state for polarity
+  String? environmentSuitability;
+  String? isContinuedUseSuitable;
+  String? passOrFail;
+  String comments;
+  bool? isRewireNeeded;
+  bool? isFuseReplacementNeeded;
 
   bool isError;
   bool loading;
@@ -330,8 +423,23 @@ class InvoicesProviderState {
   int currentPage;
   bool isAfterSearch;
   InvoiceDetailModel detailInvoiceForEdit;
+  // Faulty Equipment Register
+  List<String> faultyEquipmentRegister = [];
 
   InvoicesProviderState({
+    // Faulty Equipment States
+    this.isSocketOutletFaulty = false,
+    this.isOtherFaultyActive = false,
+    this.isPlugFaulty = false,
+    this.isFlexFaulty = false,
+    this.isBodyFaulty = false,
+    this.isPolarityCorrect = true,
+    this.environmentSuitability = "Yes",
+    this.isContinuedUseSuitable = "No",
+    this.passOrFail = "FAIL",
+    this.comments = '',
+    this.isRewireNeeded = false,
+    this.isFuseReplacementNeeded = false,
     this.isError = false,
     this.isNetworkError = false,
     this.loading = true,

@@ -47,6 +47,12 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   final formKey = GlobalKey<FormState>();
   final invoiceNameController = TextEditingController();
   final notesController = TextEditingController();
+  final otherController = TextEditingController();
+  final continuityController = TextEditingController();
+  final insulationResistanceController = TextEditingController();
+  final otherConditionController = TextEditingController();
+  final commentsController = TextEditingController();
+
   final termsConditionController = TextEditingController();
   String symbol = '\$';
   String code = '\$';
@@ -286,6 +292,10 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
     termsConditionController.dispose();
     invoiceDateController.dispose();
     dueDateController.dispose();
+    otherController.dispose();
+    continuityController.dispose();
+    insulationResistanceController.dispose();
+    otherConditionController.dispose();
   }
 
   @override
@@ -755,160 +765,303 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                           title: Text('Additional Details'.tr(),
                               style: Theme.of(context).textTheme.titleLarge),
                           children: [
-                            // Note Switch
+                            // Equipments conditions Switch
                             SwitchListTile(
                               contentPadding: EdgeInsets.zero,
                               value: provider.state.isNotesActive,
                               onChanged: provider.changeNotesActiveStatus,
-                              title: Text('notes'.tr(),
+                              title: Text('Equipments conditions'.tr(),
                                   style:
                                       Theme.of(context).textTheme.titleLarge),
                             ),
-                            Builder(builder: (context) {
-                              if (provider.state.isNotesActive) {
-                                return Container(
-                                  margin: const EdgeInsets.only(top: 10.0),
-                                  child: MTextFormField(
-                                    controller: notesController,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    keyboardType: TextInputType.text,
-                                    textInputAction: TextInputAction.done,
-                                    labelText: 'notes'.tr(),
-                                    hintText: 'notes_placeholder'.tr(),
+                            if (provider.state.isNotesActive)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Socket-outlet Checkbox
+                                  CheckboxListTile(
+                                    value: provider.state.isSocketOutletFaulty,
+                                    onChanged: (bool? value) {
+                                      provider.changeSocketOutletFaultyStatus(
+                                          value);
+                                    },
+                                    title: Text('Socket-outlet'.tr()),
                                   ),
-                                );
-                              }
-                              return const Opacity(opacity: 0);
-                            }),
+                                  // Plug Checkbox
+                                  CheckboxListTile(
+                                    value: provider.state.isPlugFaulty,
+                                    onChanged: (bool? value) {
+                                      provider.changePlugFaultyStatus(value);
+                                    },
+                                    title: Text('Plug'.tr()),
+                                  ),
+                                  // Flex Checkbox
+                                  CheckboxListTile(
+                                    value: provider.state.isFlexFaulty,
+                                    onChanged: (bool? value) {
+                                      provider.changeFlexFaultyStatus(value);
+                                    },
+                                    title: Text('Flex'.tr()),
+                                  ),
+                                  // Body Checkbox
+                                  CheckboxListTile(
+                                    value: provider.state.isBodyFaulty,
+                                    onChanged: (bool? value) {
+                                      provider.changeBodyFaultyStatus(value);
+                                    },
+                                    title: Text('Body'.tr()),
+                                  ),
+                                  // Other (Text Box)
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: MTextFormField(
+                                      controller: otherController,
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      keyboardType: TextInputType.text,
+                                      textInputAction: TextInputAction.done,
+                                      labelText: 'Other'.tr(),
+                                      hintText: 'Other other_taxssue'.tr(),
+                                      onChanged: (String value) {},
+                                    ),
+                                  ),
+                                ],
+                              ),
                             // Divider
                             Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                child: const Divider()),
-
-                            // Terms and Conditions Switch
-                            SwitchListTile(
-                              contentPadding: EdgeInsets.zero,
-                              value: provider.state.isTermsConditionActive,
-                              onChanged: provider.changeTermsConditionStatus,
-                              title: Text('terms_and_condition'.tr()),
+                              margin: const EdgeInsets.only(top: 10),
+                              child: const Divider(),
                             ),
-                            Builder(builder: (context) {
-                              if (provider.state.isTermsConditionActive) {
-                                return Container(
-                                  margin: const EdgeInsets.only(top: 10.0),
-                                  child: MTextFormField(
-                                    controller: termsConditionController,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    keyboardType: TextInputType.text,
-                                    textInputAction: TextInputAction.done,
-                                    maxLines: 3,
-                                    labelText: 'terms_and_condition'.tr(),
-                                  ),
-                                );
-                              }
-                              return const Opacity(opacity: 0);
-                            }),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: const Divider(),
-                ),
 
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: Theme(
-                    data: Theme.of(context)
-                        .copyWith(dividerColor: Colors.transparent),
-                    child: Column(
-                      children: [
-                        // Existing ExpansionTile for Additional Details
-                        ExpansionTile(
-                          tilePadding: EdgeInsets.zero,
-                          initiallyExpanded: provider.state.detailInvoiceForEdit
-                                      .description.isNotEmpty ||
-                                  provider.state.detailInvoiceForEdit
-                                      .termsAndConditions.isNotEmpty
-                              ? true
-                              : false,
-                          title: Text('Additional Details'.tr(),
-                              style: Theme.of(context).textTheme.titleLarge),
-                          children: [
-                            // Note Switch
+                            // Test Results Switch
+                            //
                             SwitchListTile(
                               contentPadding: EdgeInsets.zero,
                               value: provider.state.isNotesActive,
                               onChanged: provider.changeNotesActiveStatus,
-                              title: Text('notes'.tr(),
+                              title: Text('Test results'.tr(),
                                   style:
                                       Theme.of(context).textTheme.titleLarge),
                             ),
-                            Builder(builder: (context) {
-                              if (provider.state.isNotesActive) {
-                                return Container(
-                                  margin: const EdgeInsets.only(top: 10.0),
-                                  child: MTextFormField(
-                                    controller: notesController,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    keyboardType: TextInputType.text,
-                                    textInputAction: TextInputAction.done,
-                                    labelText: 'notes'.tr(),
-                                    hintText: 'notes_placeholder'.tr(),
+                            if (provider.state.isNotesActive)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Continuity (Ohms) Text Box
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: MTextFormField(
+                                      controller: continuityController,
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.next,
+                                      labelText: 'Continuity (Ω)'.tr(),
+                                      hintText: 'Enter Continuity (Ω)'.tr(),
+                                      onChanged: (String value) {},
+                                    ),
                                   ),
-                                );
-                              }
-                              return const Opacity(opacity: 0);
-                            }),
-                            // Divider
-                            Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                child: const Divider()),
 
-                            // Terms and Conditions Switch
+                                  // Insulation Resistance (Mega Ohms) Text Box
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: MTextFormField(
+                                      controller:
+                                          insulationResistanceController,
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.next,
+                                      labelText:
+                                          'Insulation Resistance (MΩ)'.tr(),
+                                      hintText:
+                                          'Enter Insulation Resistance (MΩ)'
+                                              .tr(),
+                                      onChanged: (String value) {},
+                                    ),
+                                  ),
+
+                                  // Polarity (Tick or Cross)
+                                  Row(
+                                    children: [
+                                      Text('Polarity'.tr()),
+                                      Spacer(),
+                                      IconButton(
+                                        icon: provider.state.isPolarityCorrect
+                                            ? Icon(Icons.check_box,
+                                                color: Colors.green)
+                                            : Icon(Icons.cancel,
+                                                color: Colors.red),
+                                        onPressed: () {
+                                          provider.togglePolarity();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+
+                                  // Other (Text Box)
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: MTextFormField(
+                                      controller: otherConditionController,
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      keyboardType: TextInputType.text,
+                                      textInputAction: TextInputAction.done,
+                                      labelText: 'Other'.tr(),
+                                      hintText: 'Other equipment issue'.tr(),
+                                      onChanged: (String value) {},
+                                    ),
+                                  ),
+                                ],
+                              ),
+// Divider
+                            Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: const Divider(),
+                            ),
+
+                            // Results Switch
                             SwitchListTile(
                               contentPadding: EdgeInsets.zero,
                               value: provider.state.isTermsConditionActive,
                               onChanged: provider.changeTermsConditionStatus,
-                              title: Text('terms_and_condition'.tr()),
+                              title: Text('Results'.tr(),
+                                  style:
+                                      Theme.of(context).textTheme.titleLarge),
                             ),
-                            Builder(builder: (context) {
-                              if (provider.state.isTermsConditionActive) {
-                                return Container(
-                                  margin: const EdgeInsets.only(top: 10.0),
-                                  child: MTextFormField(
-                                    controller: termsConditionController,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    keyboardType: TextInputType.text,
-                                    textInputAction: TextInputAction.done,
-                                    maxLines: 3,
-                                    labelText: 'terms_and_condition'.tr(),
+                            if (provider.state.isTermsConditionActive)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Suitable for environment (Yes/No Drop down)
+                                  DropdownButtonFormField<String>(
+                                    value:
+                                        provider.state.environmentSuitability,
+                                    onChanged: (String? newValue) {
+                                      provider.changeEnvironmentSuitability(
+                                          newValue);
+                                    },
+                                    items: ['Yes', 'No'].map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value.tr()),
+                                      );
+                                    }).toList(),
+                                    decoration: InputDecoration(
+                                        labelText:
+                                            'Suitable for environment'.tr()),
                                   ),
-                                );
-                              }
-                              return const Opacity(opacity: 0);
-                            }),
+
+                                  // Suitable for continued use (Yes/No Drop down)
+                                  DropdownButtonFormField<String>(
+                                    value:
+                                        provider.state.isContinuedUseSuitable,
+                                    onChanged: (String? newValue) {
+                                      provider.changeContinuedUseSuitability(
+                                          newValue);
+                                    },
+                                    items: ['Yes', 'No'].map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value.tr()),
+                                      );
+                                    }).toList(),
+                                    decoration: InputDecoration(
+                                        labelText:
+                                            'Suitable for continued use'.tr()),
+                                  ),
+
+                                  // PASS/Fail (drop down)
+                                  DropdownButtonFormField<String>(
+                                    value: provider.state.passOrFail,
+                                    onChanged: (String? newValue) {
+                                      provider.changePassOrFail(newValue);
+                                    },
+                                    items: ['PASS', 'FAIL'].map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value.tr()),
+                                      );
+                                    }).toList(),
+                                    decoration: InputDecoration(
+                                        labelText: 'PASS/Fail'.tr()),
+                                  ),
+
+                                  // Comments
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: MTextFormField(
+                                      controller: commentsController,
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      keyboardType: TextInputType.text,
+                                      textInputAction: TextInputAction.done,
+                                      labelText: 'Comments'.tr(),
+                                      hintText: 'Enter any comments'.tr(),
+                                      onChanged: (String value) {
+                                        provider.updateComments(value);
+                                      },
+                                    ),
+                                  ),
+
+                                  // Rewire (Tick or Cross) - if tick, add to repair register and allow photo option
+                                  CheckboxListTile(
+                                    value: provider.state.isRewireNeeded,
+                                    onChanged: (bool? value) {
+                                      provider.changeRewireStatus(value);
+                                    },
+                                    title: Text('Rewire'.tr()),
+                                  ),
+
+                                  // Fuse replacement (Tick or Cross) - if tick, add to repair register and allow photo option
+                                  CheckboxListTile(
+                                    value:
+                                        provider.state.isFuseReplacementNeeded,
+                                    onChanged: (bool? value) {
+                                      provider
+                                          .changeFuseReplacementStatus(value);
+                                    },
+                                    title: Text('Fuse replacement'.tr()),
+                                  ),
+                                ],
+                              ),
+// Divider
+                            // Container(
+                            //   margin: const EdgeInsets.only(top: 10),
+                            //   child: const Divider(),
+                            // ),
+
+                            // Terms and Conditions Switch (existing code)
+                            // SwitchListTile(
+                            //   contentPadding: EdgeInsets.zero,
+                            //   value: provider.state.isTermsConditionActive,
+                            //   onChanged: provider.changeTermsConditionStatus,
+                            //   title: Text('Results'.tr()),
+                            // ),
+                            // if (provider.state.isTermsConditionActive)
+                            //   Container(
+                            //     margin: const EdgeInsets.only(top: 10.0),
+                            //     child: MTextFormField(
+                            //       controller: termsConditionController,
+                            //       textCapitalization:
+                            //           TextCapitalization.sentences,
+                            //       keyboardType: TextInputType.text,
+                            //       textInputAction: TextInputAction.done,
+                            //       maxLines: 3,
+                            //       labelText: 'terms_and_condition'.tr(),
+                            //     ),
+                            //   ),
                           ],
-                        ),
+                        )
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
 
-          Container(
-            margin: const EdgeInsets.only(top: 20),
-            child: const Divider(),
-          ),
+          // Container(
+          //   margin: const EdgeInsets.only(top: 20),
+          //   child: const Divider(),
+          // ),
 
           // === sub total
           // Container(

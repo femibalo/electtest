@@ -116,6 +116,10 @@ class UserBillProductItem extends Equatable {
     num? fuse,
     String? inspectionFrequency,
     bool? continuityTestGreyedOut,
+    bool? isSocketOutletFaulty,
+    bool? isPlugFaulty,
+    bool? isFlexFaulty,
+    bool? isBodyFaulty,
   }) {
     return UserBillProductItem(
       id: id ?? this.id,
@@ -137,7 +141,8 @@ class UserBillProductItem extends Equatable {
       rating: rating ?? this.rating,
       fuse: fuse ?? this.fuse,
       inspectionFrequency: inspectionFrequency ?? this.inspectionFrequency,
-      continuityTestGreyedOut: continuityTestGreyedOut ?? this.continuityTestGreyedOut,
+      continuityTestGreyedOut:
+          continuityTestGreyedOut ?? this.continuityTestGreyedOut,
     );
   }
 
@@ -163,6 +168,7 @@ class UserBillProductItem extends Equatable {
     data['fuse'] = fuse;
     data['inspectionFrequency'] = inspectionFrequency;
     data['continuityTestGreyedOut'] = continuityTestGreyedOut;
+
     return data;
   }
 

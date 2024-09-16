@@ -66,6 +66,34 @@ class Invoices {
   final List<InvoiceChargeModel> custom;
   @HiveField(28)
   final String termsAndConditions;
+  @HiveField(29)
+  final bool isSocketOutletFaulty;
+  @HiveField(30)
+  final bool isPlugFaulty;
+  @HiveField(31)
+  final bool isFlexFaulty;
+  @HiveField(32)
+  final bool isBodyFaulty;
+  @HiveField(33)
+  final String continuityOhms; // Continuity (Ohms)
+  @HiveField(34)
+  final String insulationResistance; // Insulation Resistance (Mega Ohms)
+  @HiveField(35)
+  final bool isPolarityCorrect; // Polarity (tick or cross)
+  @HiveField(36)
+  final String otherCondition; // Other condition (if any)
+  @HiveField(37)
+  String? environmentSuitability;
+  @HiveField(38)
+  String? isContinuedUseSuitable;
+  @HiveField(39)
+  String? passOrFail;
+  @HiveField(40)
+  String comments;
+  @HiveField(41)
+  bool isRewireNeeded;
+  @HiveField(42)
+  bool isFuseReplacementNeeded;
 
   Invoices({
     this.id = 0,
@@ -97,6 +125,20 @@ class Invoices {
     this.items = const [],
     this.termsAndConditions = "",
     this.custom = const [],
+    this.isSocketOutletFaulty = false,
+    this.isPlugFaulty = false,
+    this.isFlexFaulty = false,
+    this.isBodyFaulty = false,
+    this.continuityOhms = "",
+    this.insulationResistance = "",
+    this.isPolarityCorrect = false,
+    this.otherCondition = "",
+    this.environmentSuitability = "",
+    this.isContinuedUseSuitable = "",
+    this.passOrFail = "",
+    this.comments = "",
+    this.isRewireNeeded = false,
+    this.isFuseReplacementNeeded = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -128,6 +170,21 @@ class Invoices {
     data['items'] = items;
     data['charges'] = custom;
     data['termsAndCondition'] = termsAndConditions;
+    data['isSocketOutletFaulty'] = isSocketOutletFaulty;
+    data['isPlugFaulty'] = isPlugFaulty;
+    data['isFlexFaulty'] = isFlexFaulty;
+    data['isBodyFaulty'] = isBodyFaulty;
+    data['continuityOhms'] = continuityOhms;
+    data['insulationResistance'] = insulationResistance;
+    data['isPolarityCorrect'] = isPolarityCorrect;
+    data['otherCondition'] = otherCondition;
+    data['environmentSuitability'] = environmentSuitability;
+    data['isContinuedUseSuitable'] = isContinuedUseSuitable;
+    data['passOrFail'] = passOrFail;
+    data['comments'] = comments;
+    data['isRewireNeeded'] = isRewireNeeded;
+    data['isFuseReplacementNeeded'] = isFuseReplacementNeeded;
+
     return data;
   }
 }

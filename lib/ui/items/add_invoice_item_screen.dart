@@ -172,8 +172,8 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
     final provider = Provider.of<InvoiceItemProvider>(context);
     return Scaffold(
         appBar: AppBar(
-          title:
-              Text(widget.isEditMode ? 'Edit Item'.tr() : 'Add New Item'.tr()),
+          title: Text(
+              widget.isEditMode ? 'Edit Equipment'.tr() : 'Add Equipment'.tr()),
           actions: [_buildSaveButton(provider.state)],
         ),
         body: _getWidgetBasedOnState(provider.state));
@@ -268,11 +268,11 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                       validator: (string) {
                         if (string == null ||
                             string.toString().trim().isEmpty) {
-                          return 'Item name empty'.tr();
+                          return 'Equipment name empty'.tr();
                         }
                         return null;
                       },
-                      labelText: 'Item Name'.tr()),
+                      labelText: 'Equipment Name'.tr()),
                 ),
 
                 Container(
@@ -428,20 +428,22 @@ class _AddInvoiceItemScreenState extends State<AddInvoiceItemScreen> {
                         }
                         return null;
                       },
-                      labelText: 'Frequency of inspection'.tr()),
+                      labelText:
+                          'Frequency of inspection(Formal / Combined Inspection)'
+                              .tr()),
                 ),
 
                 // === Continuity Test (grey out if Class II is selected)
-                Opacity(
-                  opacity: greyOutContinuityTest ? 0.5 : 1.0,
-                  child: MTextFormField(
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.number,
-                    maxLines: 1,
-                    enabled: !greyOutContinuityTest,
-                    labelText: 'Continuity Test'.tr(),
-                  ),
-                ),
+                // Opacity(
+                //   opacity: greyOutContinuityTest ? 0.5 : 1.0,
+                //   child: MTextFormField(
+                //     textInputAction: TextInputAction.next,
+                //     keyboardType: TextInputType.number,
+                //     maxLines: 1,
+                //     enabled: !greyOutContinuityTest,
+                //     labelText: 'Continuity Test'.tr(),
+                //   ),
+                // ),
                 // === item price
                 /*
                 Container(

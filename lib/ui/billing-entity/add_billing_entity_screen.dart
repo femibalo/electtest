@@ -53,7 +53,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
       if (provider.state.isLogoEmpty) {
         showSnackBar(
           context: context,
-          text: 'assessor_logo_empty'.tr(),
+          text: 'Assessor logo empty'.tr(),
           snackBarType: SnackBarType.error,
         );
       } else {
@@ -126,7 +126,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         title: Text(
-            widget.isEditMode ? 'edit_assessor'.tr() : 'add_new_assessor'.tr()),
+            widget.isEditMode ? 'Edit Assessor'.tr() : 'Add_ Assessor'.tr()),
       ),
       body: Container(
           height: MediaQuery.of(context).size.height / 1,
@@ -173,7 +173,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
             validation();
           }
         },
-        child: Text('save'.tr(), style: Theme.of(context).textTheme.titleLarge),
+        child: Text('Save'.tr(), style: Theme.of(context).textTheme.titleLarge),
       ),
     );
   }
@@ -219,7 +219,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
               children: <Widget>[
                 Container(
                   margin: const EdgeInsets.only(left: 5),
-                  child: Text('assessor_information'.tr(),
+                  child: Text('Assessor Information'.tr(),
                       style: Theme.of(context).textTheme.titleLarge),
                 ),
                 Container(
@@ -304,7 +304,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                           onPressed: () {
                             selectImageUpload();
                           },
-                          child: Text('upload_logo'.tr(),
+                          child: Text('Upload Logo'.tr(),
                               style: Theme.of(context).textTheme.titleLarge),
                         ),
                       ),
@@ -325,11 +325,11 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                 maxLines: 1,
                 validator: (str) {
                   if (str.toString().isEmpty) {
-                    return 'assessor_name_empty'.tr();
+                    return 'Assessor name empty'.tr();
                   }
                   return null;
                 },
-                labelText: 'assessor_name',
+                labelText: 'Assessor name',
               ),
             ),
             // === entity name
@@ -344,13 +344,13 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                 maxLines: 1,
                 validator: (str) {
                   if (str.toString().isEmpty) {
-                    return 'assessor_email_empty'.tr();
+                    return 'Assessor email empty'.tr();
                   } else if (!EmailValidator.validate(str.toString())) {
-                    return 'enter_valid_email'.tr();
+                    return 'Enter valid email'.tr();
                   }
                   return null;
                 },
-                labelText: 'assessor_email'.tr(),
+                labelText: 'Assessor email'.tr(),
               ),
             ),
             // === entity email
@@ -393,7 +393,7 @@ class _AddBillingEntityScreenState extends State<AddBillingEntityScreen> {
                         .whenComplete(() {
                       showSnackBar(
                           context: context,
-                          text: 'success_upload'.tr(),
+                          text: 'success upload'.tr(),
                           snackBarType: SnackBarType.success);
                     });
                   }

@@ -46,12 +46,12 @@ class _ItemInAddInvoiceScreenState extends State<ItemInAddInvoiceScreen> {
                   Expanded(
                     child: Text(widget.model.name),
                   ),
-                  Expanded(
-                    child: Text(
-                      "${widget.model.currencyCode} ${NumberFormat('#,###').format(subTotalPerItem)}",
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: Text(
+                  //     "${widget.model.currencyCode} ${NumberFormat('#,###').format(subTotalPerItem)}",
+                  //     textAlign: TextAlign.right,
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(
@@ -62,20 +62,20 @@ class _ItemInAddInvoiceScreenState extends State<ItemInAddInvoiceScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      "${widget.model.qty} x ${widget.model.currencyCode.toUpperCase()} ${NumberFormat('#,###').format(widget.model.price)}",
+                      "${widget.model.equipmentId}",
                     ),
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        changeDefaultToExpanded();
-                      },
-                      child: const Text(
-                        "detail >",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: GestureDetector(
+                  //     onTap: () {
+                  //       changeDefaultToExpanded();
+                  //     },
+                  //     child: const Text(
+                  //       "detail >",
+                  //       textAlign: TextAlign.right,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               )
             ],
