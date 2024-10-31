@@ -10,7 +10,7 @@ import file_selector_macos
 import path_provider_foundation
 import share_plus
 import shared_preferences_foundation
-import sqflite
+import sqflite_darwin
 import syncfusion_pdfviewer_macos
 import url_launcher_macos
 
